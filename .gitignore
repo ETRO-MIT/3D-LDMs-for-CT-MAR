@@ -1,0 +1,41 @@
+# Python environments and generated package files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local settings and credentials
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+*.local.yaml
+*.local.yml
+
+# Data, model weights, meshes, generated results, and experiment tracking
+/data/
+/outputs/
+/logs/
+/checkpoints/
+/implant_library/
+/wandb/
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.nii
+*.nii.gz
+*.dcm
+*.stl
+*.zip
+*.log
