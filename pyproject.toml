@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ct-mar"
+version = "0.1.0.dev0"
+description = "Synthetic CT metal artifacts and conditioned 3D latent diffusion inference"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+synthesis = ["numpy>=1.24,<3", "scipy>=1.10,<2", "nibabel>=5,<6", "pandas>=2,<3"]
+implant-tools = ["trimesh>=4,<5"]
+
+[project.scripts]
+ct-mar-generate = "ct_mar.synthesis.generate:main"
+ct-mar-prepare = "ct_mar.synthesis.preprocessing.prepare_ct:main"
+
+[tool.setuptools.package-data]
+"ct_mar.synthesis" = ["resources/*.csv"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ct_mar*"]
