@@ -1,0 +1,18 @@
+ldm:
+  params:
+    spatial_dims: 3
+    in_channels: 16
+    out_channels: 8
+    num_res_blocks: 2
+    num_channels: [64, 128, 256, 512]
+    attention_levels: [False, False, True, True]
+    with_conditioning: False
+    num_head_channels: [0, 0, 32, 32]
+    use_flash_attention: False
+  scheduler:
+    schedule: "cosine"
+    num_train_timesteps: 500
+    prediction_type: "v_prediction"
+  conditioning:
+    mode: "concat"
+

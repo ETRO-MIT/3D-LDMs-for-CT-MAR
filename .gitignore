@@ -29,6 +29,8 @@ htmlcov/
 /checkpoints/
 /implant_library/
 /wandb/
+/src/ct_mar/training/
+/configs/training/
 *.pth
 *.pt
 *.ckpt

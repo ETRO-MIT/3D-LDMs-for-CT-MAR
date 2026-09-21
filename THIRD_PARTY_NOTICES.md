@@ -1,23 +1,21 @@
 # Upstream acknowledgments
 
-This document records migrated simulation code and model components planned for
-migration. Model implementations have not yet been imported.
+This document records migrated simulation code and model components from the thesis repository.
 
-## Adapted MedLoRD code
+## Adapted MedLoRD and MONAI components
 
-- Source: the thesis repository's `medlord_xabier/` subtree.
-- Upstream work: *MedLoRD: A Medical Low-Resource Diffusion Model for
-  High-Resolution 3D CT Image Synthesis*, https://arxiv.org/abs/2503.13211.
-- That subtree includes an Apache License 2.0 text, preserved without modification
-  at `third_party/Apache-2.0.txt`.
-- Record exact imported files, upstream revisions where available, and local
-  modifications when the implementation is extracted.
-
-## MONAI components
-
-The thesis copies of the VQ-VAE and diffusion inferer, among other modules, carry
-`Copyright (c) MONAI Consortium` headers and Apache License 2.0 notices. Preserve
-the headers in each migrated file and record changes to those files.
+- Source: `medlord_xabier/` subtree.
+- Upstream works:
+  - *MedLoRD: A Medical Low-Resource Diffusion Model for High-Resolution 3D CT Image Synthesis*, https://arxiv.org/abs/2503.13211.
+  - *MONAI Generative Models* / *Diffusers* (Apache License 2.0).
+- Apache License 2.0 text is preserved at `third_party/Apache-2.0.txt`.
+- Migrated modules under `src/ct_mar/inference/`:
+  - `models/diffusion_unet.py`: 3D Diffusion UNet backbone with cross-attention and spatial attention blocks (MONAI / Diffusers).
+  - `models/vqvae.py`: 3D VQ-VAE autoencoder (MONAI).
+  - `models/vector_quantizer.py`: EMA and Vector Quantizer codebook modules (DeepMind / MONAI).
+  - `models/schedulers.py`: DDPMScheduler supporting cosine beta schedule and v-prediction (MONAI / Diffusers).
+  - `models/metadata.py`: Categorical metadata cross-attention conditioning encoder and wrapper (MedLoRD adaptation).
+  - `inferer.py`: Latent diffusion reverse sampling loop (MONAI).
 
 ## Synthetic generation
 
