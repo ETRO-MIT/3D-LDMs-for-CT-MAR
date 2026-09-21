@@ -4,7 +4,7 @@
 [![Code](https://img.shields.io/badge/License-Apache--2.0-green.svg)](LICENSE.md)
 [![Weights](https://img.shields.io/badge/HuggingFace-Model--Weights-yellow)](https://huggingface.co/ETRO-MIT/3D-LDMs-for-CT-MAR)
 
-Official repository for **Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression** (DGM4MICCAI, MICCAI 2026).
+Official repository for **Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression** (Presented at DGM4MICCAI, MICCAI 2026 Workshop).
 
 This repository provides an end-to-end framework supporting two key tasks:
 1. **Synthetic Metal Artifact Generation**: A full 3D polychromatic projection and reconstruction simulation pipeline based on ASTRA CUDA, anatomy segmentations, and an anatomy-aware implant library.
@@ -17,7 +17,7 @@ This repository provides an end-to-end framework supporting two key tasks:
 - 3D CT projection simulation and diffusion inference operate on large volumes (up to $448 \times 448 \times 256$ voxels) and require an **NVIDIA GPU with CUDA acceleration**.
 
 > **Related Sources:**
-> - **Paper:** *Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression*, DGM4MICCAI 2026.
+> - **Paper:** *Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression*, DGM4MICCAI 2026 (In press / Preprint).
 > - **Pretrained Weights:** Hosted on [Hugging Face](https://huggingface.co/ETRO-MIT/3D-LDMs-for-CT-MAR).
 > - **Organization:** [ETRO - Department of Electronics and Informatics](https://www.etrovub.be/), Vrije Universiteit Brussel (VUB) and [imec](https://www.imec-int.com/).
 
@@ -32,7 +32,8 @@ If you find this repository or our work useful in your research, please cite:
   title={Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression},
   author={Moreno Casado, Xabier and Vandemeulebroucke, Jef and Ceranka, Jakub},
   booktitle={Deep Generative Models for Medical Imaging (DGM4MICCAI), MICCAI Workshop},
-  year={2026}
+  year={2026},
+  note={In press}
 }
 ```
 
@@ -93,16 +94,17 @@ On 50 held-out test CT volumes with simulated metal artifacts, both conditional 
 
 | Metric | Raw (Artifacted) | Anatomy LDM | Anatomy-Metadata LDM |
 | :--- | :---: | :---: | :---: |
-| **MAE** $\downarrow$ | **0.006 [0.005, 0.007]** | 0.008 [0.008, 0.009]* | 0.009 [0.008, 0.009] |
-| **RMSE** $\downarrow$ | 0.031 [0.028, 0.033] | 0.023 [0.021, 0.024] | **0.021 [0.021, 0.023]**\*\*\* |
-| **PSNR [dB]** $\uparrow$ | 36.29 [35.62, 37.20] | 38.89 [38.47, 39.81] | **39.43 [38.94, 39.72]**\*\*\* |
-| **SSIM** $\uparrow$ | 0.981 [0.974, 0.985] | 0.991 [0.988, 0.992] | **0.992 [0.991, 0.993]**\*\*\* |
-| **LPIPS** $\downarrow$ | 0.062 [0.040, 0.081] | 0.037 [0.029, 0.043] | **0.028 [0.025, 0.034]**\*\*\* |
-| **Artifact Suppression** $\uparrow$ *(0–5)* | — | **3.543 $\pm$ 1.107**\*\*\* | 3.397 $\pm$ 1.103 |
-| **Anatomical Preservation** $\uparrow$ *(0–5)* | — | 3.477 $\pm$ 0.966 | **3.633 $\pm$ 0.988**\*\*\* |
-| **Overall Quality** $\uparrow$ *(0–5)* | — | 3.387 $\pm$ 1.007 | **3.433 $\pm$ 0.994** *(n.s.)* |
+| **MAE** &darr; | **0.006 [0.005, 0.007]** | 0.008 [0.008, 0.009]<sup>*</sup> | 0.009 [0.008, 0.009] |
+| **RMSE** &darr; | 0.031 [0.028, 0.033] | 0.023 [0.021, 0.024] | **0.021 [0.021, 0.023]**<sup>***</sup> |
+| **PSNR [dB]** &uarr; | 36.29 [35.62, 37.20] | 38.89 [38.47, 39.81] | **39.43 [38.94, 39.72]**<sup>***</sup> |
+| **SSIM** &uarr; | 0.981 [0.974, 0.985] | 0.991 [0.988, 0.992] | **0.992 [0.991, 0.993]**<sup>***</sup> |
+| **LPIPS** &darr; | 0.062 [0.040, 0.081] | 0.037 [0.029, 0.043] | **0.028 [0.025, 0.034]**<sup>***</sup> |
+| **Artifact Suppression** &uarr; *(0–5)* | — | **3.543 &plusmn; 1.107**<sup>***</sup> | 3.397 &plusmn; 1.103 |
+| **Anatomical Preservation** &uarr; *(0–5)* | — | 3.477 &plusmn; 0.966 | **3.633 &plusmn; 0.988**<sup>***</sup> |
+| **Overall Quality** &uarr; *(0–5)* | — | 3.387 &plusmn; 1.007 | **3.433 &plusmn; 0.994** *(n.s.)* |
 
-*Values report median [bootstrap 95% CI]. Reviewer scores are mean $\pm$ standard deviation. Superscripts report comparison between the two LDMs: \* $p < 0.05$, \*\*\* $p < 0.001$, n.s. not significant.*
+<sub>Values report median [bootstrap 95% CI]. Reviewer scores are mean &plusmn; standard deviation.<br/>
+Superscripts report direct comparison between the two LDMs: <sup>*</sup> <i>p</i> &lt; 0.05, <sup>***</sup> <i>p</i> &lt; 0.001, <i>n.s.</i> not significant after Bonferroni correction.</sub>
 
 ### Qualitative Results
 
