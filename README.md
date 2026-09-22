@@ -235,7 +235,7 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 ├── Main.py                      # Unified top-level execution entry point
 ├── pyproject.toml               # Package specifications and entry points
 ├── THIRD_PARTY_NOTICES.md       # Upstream MedLoRD and MONAI notices
-└── LICENSE.md                   # License information
+└── LICENSE                      # Apache-2.0 open-source license
 ```
 
 ---
@@ -387,6 +387,6 @@ print("Saved restored volume to:", restored_path)
 
 ## License & Attribution
 
-- **Code:** Licensed under the [Apache License 2.0](LICENSE.md).
+- **Code:** Licensed under the [Apache License 2.0](LICENSE).
 - **Pretrained Weights:** Intended for research and academic evaluation under [Creative Commons Attribution Non-Commercial Share-Alike 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 - **Third-Party Acknowledgments:** Architecture components adapt code from [MedLoRD](https://arxiv.org/abs/2503.13211) and [MONAI Consortium](https://monai.io/). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for full notices.
