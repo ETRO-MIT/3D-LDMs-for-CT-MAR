@@ -1,7 +1,7 @@
 # Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression
 
 [![Paper](https://img.shields.io/badge/Paper-DGM4MICCAI--2026-blue)](https://github.com/ETRO-MIT/3D-LDMs-for-CT-MAR)
-[![Code](https://img.shields.io/badge/License-Apache--2.0-green.svg)](LICENSE.md)
+[![Code](https://img.shields.io/badge/License-Apache--2.0-green.svg)](LICENSE)
 [![Weights](https://img.shields.io/badge/HuggingFace-Model--Weights-yellow)](https://huggingface.co/xabimoreno/3D-LDMs-for-CT-MAR)
 
 Official repository for **Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression** (Presented at DGM4MICCAI, MICCAI 2026 Workshop).
