@@ -18,13 +18,8 @@ NumPy/SciPy on the CPU.
 
 - A clean 3D NIfTI CT in HU, prepared in axis-aligned RAS orientation at 1 mm
   isotropic spacing. This command validates this preparation; it does not resample.
-- A prepared implant library. The local copy is at `data/implant_library` and
-  remains excluded from Git. A public download has not yet been configured.
+- A prepared implant library located under `data/implant_library/` (e.g. sample hip implants).
 - Anatomy masks in the same voxel grid as the CT for automatic region selection.
-
-The copied library contains 27 masks, of which 25 are listed in metadata. Two
-`*_original.nii.gz` hip masks are not selected by the library loader. This differs
-from the manuscript count of 29 and needs reconciliation before the release.
 
 ## Optional dataset preparation
 

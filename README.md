@@ -193,7 +193,6 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 │   │   ├── vqvae_ds4.yaml       # Shared Stage 1 VQ-VAE model architecture
 │   │   ├── anatomy_ldm.yaml     # Anatomy-conditioned LDM configuration
 │   │   └── anatomy_metadata_ldm.yaml # Anatomy + Metadata-conditioned LDM configuration
-│   ├── synthesis/               # Simulation spectrum and geometry parameters
 │   └── training/                # Training configurations
 │       ├── vqvae_ds4_train.yaml # Stage 1 VQ-VAE-GAN training hyperparameters
 │       ├── anatomy_ldm_train.yaml # Anatomy-conditioned LDM training hyperparameters

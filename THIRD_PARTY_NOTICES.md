@@ -19,11 +19,10 @@ This document records migrated simulation code and model components from the the
 
 ## Synthetic generation
 
-The simulation code was copied from the thesis repository's `MASynthesisFull3D/`
-subtree at commit `5df91ee`. See `docs/synthesis_migration.md` for file mappings and
-changes. The original-code license remains undecided.
-TotalSegmentator and ASTRA are planned external tools; their own licenses apply.
-They are external dependencies and are not bundled.
+The simulation framework includes polychromatic forward-projection and filtered
+backprojection based on the ASTRA CUDA toolbox and TotalSegmentator anatomical
+segmentation tools. Their respective licenses apply. They are external dependencies
+and are not bundled with this package.
 
 Implant masks, STL meshes, CT examples, and pretrained model weights are separate
 artifacts. Their redistribution terms must be documented individually when added
