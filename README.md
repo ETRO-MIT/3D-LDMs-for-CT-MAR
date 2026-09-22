@@ -193,7 +193,11 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 │   │   ├── vqvae_ds4.yaml       # Shared Stage 1 VQ-VAE model architecture
 │   │   ├── anatomy_ldm.yaml     # Anatomy-conditioned LDM configuration
 │   │   └── anatomy_metadata_ldm.yaml # Anatomy + Metadata-conditioned LDM configuration
-│   └── synthesis/               # Simulation spectrum and geometry parameters
+│   ├── synthesis/               # Simulation spectrum and geometry parameters
+│   └── training/                # Training configurations
+│       ├── vqvae_ds4_train.yaml # Stage 1 VQ-VAE-GAN training hyperparameters
+│       ├── anatomy_ldm_train.yaml # Anatomy-conditioned LDM training hyperparameters
+│       └── anatomy_metadata_ldm_train.yaml # Anatomy + Metadata LDM training hyperparameters
 ├── data/
 │   └── implant_library/         # Sample implants (e.g. hip prostheses)
 ├── docs/                        # Detailed technical documentation
@@ -208,17 +212,22 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 │       │   ├── simulation.py    # Polychromatic projection and reconstruction
 │       │   ├── geometry_astra.py# ASTRA CUDA projector configuration
 │       │   └── preprocessing/   # Anatomy segmentation and implant placement
-│       └── inference/           # Task 2: Metal artifact suppression pipeline
-│           ├── pipeline.py      # High-level MARPipeline orchestrator
-│           ├── inferer.py       # LatentDiffusionInferer reverse sampling loop
-│           ├── transforms.py    # CT windowing [-1000, 4000], normalization, 3D padding/crop
-│           ├── io.py            # NIfTI affine-preserving save & slice preview export
-│           ├── cli.py           # CLI entry point (ct-mar-suppress)
-│           └── models/          # Neural network architectures
-│               ├── vqvae.py     # Stage 1 3D VQ-VAE
-│               ├── diffusion_unet.py # Stage 2 3D Diffusion UNet denoiser
-│               ├── metadata.py  # Categorical metadata encoder
-│               └── schedulers.py# DDPM scheduler with cosine schedule and v-prediction
+│       ├── inference/           # Task 2: Metal artifact suppression pipeline
+│       │   ├── pipeline.py      # High-level MARPipeline orchestrator
+│       │   ├── inferer.py       # LatentDiffusionInferer reverse sampling loop
+│       │   ├── transforms.py    # CT windowing [-1000, 4000], normalization, 3D padding/crop
+│       │   ├── io.py            # NIfTI affine-preserving save & slice preview export
+│       │   ├── cli.py           # CLI entry point (ct-mar-suppress)
+│       │   └── models/          # Neural network architectures
+│       │       ├── vqvae.py     # Stage 1 3D VQ-VAE
+│       │       ├── diffusion_unet.py # Stage 2 3D Diffusion UNet denoiser
+│       │       ├── metadata.py  # Categorical metadata encoder
+│       │       └── schedulers.py# DDPM scheduler with cosine schedule and v-prediction
+│       └── training/            # Model training pipelines
+│           ├── dataset.py       # Paired 3D MAR dataset loader with on-the-fly augmentation
+│           ├── discriminator.py # 3D patch discriminator for Stage 1 adversarial training
+│           ├── train_vqgan.py   # Stage 1 VQ-VAE-GAN training script
+│           └── train_ldm.py     # Stage 2 3D Latent Diffusion Model training script
 ├── tests/                       # Unit tests
 │   ├── test_synthesis.py
 │   ├── test_preprocessing.py
@@ -305,6 +314,47 @@ ct-mar-suppress --input artifacted.nii.gz --output-dir outputs/restored --model 
 **Outputs generated:**
 1. `*_restored_{model}.nii.gz`: Restored CT volume in original Hounsfield Units, preserving the original NIfTI geometry and affine coordinates.
 2. `*_preview_{model}.png`: Side-by-side axial slice comparison between the input artifacted CT and the restored result.
+
+---
+
+### Model Training Pipeline
+
+To train your own models from scratch or fine-tune on custom cohorts:
+
+#### 1. Stage 1: VQ-VAE-GAN Training
+Train the 3D discrete autoencoder on clean, artifact-free 3D CT volumes:
+
+```bash
+ct-mar-train-vqgan \
+  --config_file configs/training/vqvae_ds4_train.yaml \
+  --train_ids /path/to/clean_cts_manifest.csv \
+  --output_dir runs/vqgan \
+  --batch_size 8 \
+  --n_epochs 222
+```
+
+#### 2. Stage 2: 3D Latent Diffusion Model Training
+Train the conditional 3D diffusion U-Net using paired synthetic data:
+
+```bash
+# Train Anatomy-Conditioned LDM
+ct-mar-train-ldm \
+  --model anatomy \
+  --config_file configs/training/anatomy_ldm_train.yaml \
+  --config_vqvae configs/training/vqvae_ds4_train.yaml \
+  --vqvae_ckpt runs/vqgan/checkpoint_best.pth \
+  --train_ids /path/to/paired_train.csv \
+  --output_dir runs/ldm_anatomy
+
+# Train Anatomy + Metadata-Conditioned LDM
+ct-mar-train-ldm \
+  --model anatomy_metadata \
+  --config_file configs/training/anatomy_metadata_ldm_train.yaml \
+  --config_vqvae configs/training/vqvae_ds4_train.yaml \
+  --vqvae_ckpt runs/vqgan/checkpoint_best.pth \
+  --train_ids /path/to/paired_train.csv \
+  --output_dir runs/ldm_metadata
+```
 
 ---
 

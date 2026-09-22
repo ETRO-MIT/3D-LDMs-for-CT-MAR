@@ -14,12 +14,15 @@ dependencies = []
 synthesis = ["numpy>=1.24,<3", "scipy>=1.10,<2", "nibabel>=5,<6", "pandas>=2,<3"]
 implant-tools = ["trimesh>=4,<5"]
 inference = ["torch>=2.0", "monai>=1.3", "pyyaml>=6.0", "nibabel>=5,<6", "numpy>=1.24,<3", "tqdm>=4.65"]
-all = ["ct-mar[synthesis,implant-tools,inference]"]
+training = ["torch>=2.0", "monai>=1.3", "pyyaml>=6.0", "nibabel>=5,<6", "numpy>=1.24,<3", "pandas>=2,<3", "tqdm>=4.65"]
+all = ["ct-mar[synthesis,implant-tools,inference,training]"]
 
 [project.scripts]
 ct-mar-generate = "ct_mar.synthesis.generate:main"
 ct-mar-prepare = "ct_mar.synthesis.preprocessing.prepare_ct:main"
 ct-mar-suppress = "ct_mar.inference.cli:main"
+ct-mar-train-vqgan = "ct_mar.training.train_vqgan:main"
+ct-mar-train-ldm = "ct_mar.training.train_ldm:main"
 
 [tool.setuptools.package-data]
 "ct_mar.synthesis" = ["resources/*.csv"]

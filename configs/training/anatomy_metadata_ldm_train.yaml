@@ -1,0 +1,41 @@
+ldm:
+  base_lr: 0.000020
+  params:
+    spatial_dims: 3
+    in_channels: 16
+    out_channels: 8
+    num_res_blocks: 2
+    num_channels: [64, 128, 256, 512]
+    attention_levels: [False, False, True, True]
+    with_conditioning: True
+    cross_attention_dim: 128
+    transformer_num_layers: 1
+    num_head_channels: [0, 0, 32, 32]
+    use_flash_attention: False
+  scheduler:
+    schedule: "cosine"
+    num_train_timesteps: 500
+    prediction_type: "v_prediction"
+  conditioning:
+    mode: "concat_crossattn"
+    target_key: "implant_only_image"
+    condition_key: "synthetic_image"
+  metadata_conditioning:
+    context_dim: 128
+    region_vocab:
+      - "unknown"
+      - "spine"
+      - "hip"
+      - "knee"
+      - "shoulder"
+    side_vocab:
+      - "unknown"
+      - "left"
+      - "right"
+      - "midline"
+      - "bilateral"
+    metal_name_vocab:
+      - "unknown"
+      - "iron"
+      - "titanium"
+

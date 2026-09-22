@@ -25,14 +25,10 @@ htmlcov/
 # Data, model weights, meshes, generated results, and experiment tracking
 /data/
 /outputs/
-/logs/
-/checkpoints/
-/implant_library/
 /checkpoints/*
 !/checkpoints/README.md
+/implant_library/
 /wandb/
-/src/ct_mar/training/
-/configs/training/
 *.pth
 *.pt
 *.ckpt
