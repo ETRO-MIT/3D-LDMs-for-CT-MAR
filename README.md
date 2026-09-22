@@ -6,6 +6,12 @@
 
 Official repository for **Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression** (Presented at DGM4MICCAI, MICCAI 2026 Workshop).
 
+This repository provides an end-to-end framework supporting two key tasks:
+1. **Synthetic Metal Artifact Generation**: A full 3D polychromatic projection and reconstruction simulation pipeline based on ASTRA CUDA, anatomy segmentations, and an anatomy-aware implant library.
+2. **CT Metal Artifact Suppression (MAR)**: The first large-volume 3D image-domain latent diffusion framework for CT metal artifact suppression, evaluating two conditioned models:
+   - **Anatomy-Conditioned LDM**: Conditioned on the artifacted CT image prior via latent channel concatenation.
+   - **Anatomy + Metadata Conditioned LDM**: Conditioned on the artifacted CT prior and cross-attention metadata tokens (anatomical region, implant laterality, and metal material).
+
 ⚠️ **Notes:**
 - The provided models and pipelines are intended for **research purposes only** and have not been validated for clinical or commercial use.
 - 3D CT projection simulation and diffusion inference operate on large volumes (up to $448 \times 448 \times 256$ voxels) and require an **NVIDIA GPU with CUDA acceleration**.
@@ -33,20 +39,39 @@ If you find this repository or our work useful in your research, please cite:
 
 ---
 
+## Quick Start
 ## Theoretical Framework & Methodology
 
+### Supported Tasks & Models
 Metallic implants in computed tomography (CT), such as hip prostheses, spinal fixation screws, and plates, produce severe streaking, shading, and cupping artifacts due to beam hardening, photon starvation, scatter, and reconstruction nonlinearities. These artifacts obscure critical implant-adjacent anatomy and hinder computer-assisted surgery, navigation, and automated image computing.
 
+| Task | Method / Model | Keyword | Description |
+| :--- | :--- | :--- | :--- |
+| **1. Simulation** | Polychromatic ASTRA 3D | `generate` | Full 3D cone-beam projection & reconstruction metal artifact simulation |
+| **2. Suppression** | Anatomy-Conditioned 3D LDM | `anatomy` | 3D latent diffusion conditioned on artifacted image prior |
+| **2. Suppression** | Anatomy + Metadata 3D LDM | `anatomy_metadata` | 3D latent diffusion conditioned on artifacted prior + implant metadata |
 Many existing projection-domain and dual-domain methods rely on raw scanner sinograms and acquisition geometries, which are rarely preserved in retrospective clinical archives. Furthermore, 2D slice-based approaches suffer from inter-slice inconsistencies and cannot exploit full 3D volumetric context, while voxel-space 3D diffusion models are computationally prohibitive.
 
+### Quick Example
 To address these challenges, this framework is divided into two primary tasks:
 
+```bash
+# Clone repository
+git clone https://github.com/ETRO-MIT/3D-LDMs-for-CT-MAR.git
+cd 3D-LDMs-for-CT-MAR
 <p align="center">
   <img src="Figures/Architecture_model.png" alt="Architecture Diagram" width="92%"/>
 </p>
 
+# Create virtual environment and install dependencies
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip setuptools wheel
+pip install -e ".[all]"
 **Figure 1.** Overview of the conditional large-volume 3D latent diffusion architecture for image-domain MAR. A Stage 1 VQ-VAE-GAN compresses CT volumes into a low-dimensional latent space. A 3D conditional diffusion U-Net operates on $448 \times 448 \times 256$ crops to denoise target latents, which are then decoded back to full-resolution CT volumes.
 
+# Run artifact suppression (Model 1: Anatomy Conditioned)
+python Main.py suppress --input sample_artifacted.nii.gz --output_dir outputs/restored --model anatomy
 ### 1. Synthetic Metal Artifact Generation Pipeline
 Due to patient radiation and ethical constraints, clinical datasets lack paired non-artifacted ground truth CTs for patients with metallic implants. We address this with an anatomy-aware synthetic artifact simulation pipeline:
 - **Anatomy & Implant Placement:** Clean 3D CT volumes are segmented using TotalSegmentator. Plausible implant shapes (from an STL / segmented implant library) are automatically aligned and inserted into anatomical regions (e.g. spine, hip, pelvis).
@@ -54,23 +79,38 @@ Due to patient radiation and ethical constraints, clinical datasets lack paired 
 - **Physical Artifact Modeling:** Polychromatic X-ray spectra, Beer-Lambert attenuation, beam hardening, and Poisson photon noise are simulated.
 - **Paired Ground-Truth Reconstruction:** The simulated sinogram is reconstructed with filtered backprojection (FDK), creating an artifact-corrupted CT alongside a paired non-corrupted ground truth with the clean implant inserted, accompanied by structured JSON metadata.
 
+# Run artifact suppression (Model 2: Anatomy + Metadata Conditioned)
+python Main.py suppress --input sample_artifacted.nii.gz --output_dir outputs/restored \
+  --model anatomy_metadata --region hip --side right --metal titanium
+```
 ### 2. 3D Latent Diffusion for Metal Artifact Reduction (MAR)
 Our artifact suppression model operates in two stages:
 - **Stage 1 (Latent Compression):** A 3D VQ-VAE-GAN compresses full-resolution CT volumes into compact latent tensors with a spatial downsampling factor of 4, preserving anatomical structure while substantially reducing memory and compute demands.
 - **Stage 2 (Conditional 3D Diffusion):** A 3D conditional U-Net denoiser operating on large crops of $448 \times 448 \times 256$ voxels ($112 \times 112 \times 64$ in latent space) learns to reverse the diffusion process and reconstruct artifact-free targets.
 
+---
 We investigate two distinct conditioning strategies:
 
+## Introduction & Methodology
 #### 2.1. Anatomy-Conditioned LDM
 - **Mechanism:** The latent representation of the artifact-corrupted CT is directly concatenated channel-wise with the noisy target latent at each diffusion step.
 - **Characteristics:** Provides strong, direct anatomical guidance from the patient's scan, yielding slightly higher raw visual artifact reduction.
 
+Metallic implants in computed tomography (CT), such as hip prostheses, spinal fixation screws, and plates, generate severe streaking, shading, and cupping artifacts due to beam hardening, photon starvation, scatter, and reconstruction nonlinearities. These artifacts obscure critical anatomy and hinder computer-assisted surgery and downstream image computing.
 #### 2.2. Anatomy & Metadata-Conditioned LDM
 - **Mechanism:** Combines channel-wise latent concatenation of the artifacted scan with categorical cross-attention token embeddings derived from acquisition and implant metadata:
   - **Anatomical Region:** `spine`, `hip`, `knee`, `shoulder`, `unknown`
   - **Implant Laterality / Side:** `left`, `right`, `midline`, `bilateral`, `unknown`
   - **Metal Material:** `titanium` (3000 HU), `iron` / stainless steel (4000 HU), `unknown`
 - **Characteristics:** Provides explicit anatomical and physical context to the diffusion backbone, achieving superior quantitative scores (RMSE, PSNR, SSIM, LPIPS) and significantly improved anatomical preservation around implants.
+
+Existing projection-domain and dual-domain methods require access to raw scanner projection data and scanner geometries, which are frequently unavailable in retrospective clinical repositories. To overcome these limitations, we propose the first 3D image-domain latent diffusion framework for large-volume CT metal artifact suppression:
+
+<p align="center">
+  <img src="Figures/Architecture_model.png" alt="Architecture Diagram" width="92%"/>
+</p>
+
+**Figure 1.** Architecture of the proposed conditional large-volume 3D latent diffusion framework for image-domain MAR. A Stage 1 VQ-VAE-GAN compresses full-resolution 3D CT volumes into compact latent representations. A 3D conditional diffusion U-Net operates on $448 \times 448 \times 256$ voxel crops to denoise the latent space back to clean, artifact-suppressed representations. Both models are conditioned on the artifacted CT; the metadata-conditioned model additionally injects cross-attention implant and anatomy embeddings.
 
 ---
 
@@ -80,6 +120,7 @@ We investigate two distinct conditioning strategies:
 
 On 50 held-out test CT volumes with simulated metal artifacts, both conditional LDMs significantly improve structural fidelity and perceptual metrics over the raw artifacted input:
 
+| Metric | Raw (Artifacted) | Anatomy LDM | Anatomy-Metadata LDM |
 | Metric | Raw (Artifacted) | 2.1 Anatomy LDM | 2.2 Anatomy-Metadata LDM |
 | :--- | :---: | :---: | :---: |
 | **MAE** &darr; | **0.006 [0.005, 0.007]** | 0.008 [0.008, 0.009]<sup>*</sup> | 0.009 [0.008, 0.009] |
@@ -100,6 +141,7 @@ Superscripts report direct comparison between the two LDMs: <sup>*</sup> <i>p</i
   <img src="Figures/Figure_2.png" alt="Synthetic Paired Results" width="90%"/>
 </p>
 
+**Figure 2.** Paired synthetic MAR examples. Columns show: (1) Artifacted input CT, (2) Ground-truth clean CT with inserted implant, (3) Anatomy-conditioned output, and (4) Anatomy-and-metadata conditioned output.
 **Figure 2.** Paired synthetic MAR examples. Columns show: (1) Artifacted input CT, (2) Ground-truth clean CT with inserted implant, (3) Anatomy-conditioned output (2.1), and (4) Anatomy-and-metadata conditioned output (2.2).
 
 <p align="center">
@@ -164,6 +206,7 @@ python3.11 -m venv .venv
 source .venv/bin/activate
 
 # 2. Install package and dependencies
+# For inference only:
 # For artifact suppression only:
 pip install -e ".[inference]"
 
@@ -199,6 +242,11 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 
 ```text
 3D-LDMs-for-CT-MAR/
+├── Figures/                     # Paper figures and illustrations
+│   ├── Architecture_model.png   # Model architecture overview (Figure 1)
+│   ├── Figure_2.png             # Paired synthetic test comparisons (Figure 2)
+│   ├── Figure_3.png             # Visual review trade-off analysis (Figure 3)
+│   └── Figure_4.png             # Qualitative evaluation on real clinical CTs (Figure 4)
 ├── Figures/                     # Paper figures and architecture illustrations
 │   ├── Architecture_model.png   # Two-stage framework architecture (Figure 1)
 │   ├── Figure_2.png             # Paired synthetic comparisons (Figure 2)
@@ -207,6 +255,11 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 ├── checkpoints/                 # Pretrained model weights
 │   └── README.md                # Checkpoint descriptions and download instructions
 ├── configs/
+│   ├── inference/               # Inference configurations
+│   │   ├── vqvae_ds4.yaml       # Shared Stage 1 VQ-VAE model architecture
+│   │   ├── anatomy_ldm.yaml     # Model 1: Anatomy-conditioned LDM
+│   │   └── anatomy_metadata_ldm.yaml # Model 2: Anatomy-metadata conditioned LDM
+│   └── synthesis/               # Simulation spectrum and geometry parameters
 │   ├── inference/               # Model inference configurations
 │   │   ├── vqvae_ds4.yaml       # Shared Stage 1 VQ-VAE architecture
 │   │   ├── anatomy_ldm.yaml     # 2.1 Anatomy-conditioned LDM config
@@ -214,6 +267,9 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 │   └── synthesis/               # Simulation spectrum and projection geometry parameters
 ├── data/
 │   └── implant_library/         # Sample implants (e.g. hip prostheses)
+├── docs/                        # Detailed technical documentation
+│   ├── synthetic_generation.md  # Complete 3D simulation workflow guide
+│   ├── ct_preprocessing.md      # CT spacing and orientation specifications
 ├── docs/                        # Technical guides
 │   ├── synthetic_generation.md  # Detailed 3D simulation documentation
 │   ├── ct_preprocessing.md      # CT spacing and reorientation guidelines
@@ -221,11 +277,14 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 ├── src/
 │   └── ct_mar/
 │       ├── __init__.py
+│       ├── synthesis/           # Task 1: Synthetic artifact generation pipeline
 │       ├── synthesis/           # 1. Synthetic artifact generation pipeline
 │       │   ├── generate.py      # Simulation driver (ct-mar-generate)
+│       │   ├── simulation.py    # Polychromatic projection and reconstruction
 │       │   ├── simulation.py    # Polychromatic projection & reconstruction
 │       │   ├── geometry_astra.py# ASTRA CUDA projector configuration
 │       │   └── preprocessing/   # Anatomy segmentation and implant placement
+│       └── inference/           # Task 2: Metal artifact suppression
 │       └── inference/           # 2. Metal artifact suppression pipeline
 │           ├── pipeline.py      # High-level MARPipeline orchestrator
 │           ├── inferer.py       # LatentDiffusionInferer reverse sampling loop
@@ -233,10 +292,13 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 │           ├── io.py            # NIfTI affine-preserving save & slice preview export
 │           ├── cli.py           # CLI entry point (ct-mar-suppress)
 │           └── models/          # Neural network architectures
+│               ├── vqvae.py     # 3D VQ-VAE
+│               ├── diffusion_unet.py # 3D Diffusion UNet denoiser
 │               ├── vqvae.py     # Stage 1 3D VQ-VAE
 │               ├── diffusion_unet.py # Stage 2 3D Diffusion UNet denoiser
 │               ├── metadata.py  # Categorical metadata encoder
 │               └── schedulers.py# DDPM scheduler with cosine schedule and v-prediction
+├── tests/                       # Unit tests
 ├── tests/                       # Automated unit tests
 │   ├── test_synthesis.py
 │   ├── test_preprocessing.py
@@ -250,10 +312,13 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 
 ---
 
+## Usage Guide
 ## Implementation & Usage Guide
 
+### Task 1: Synthetic Metal Artifact Generation
 ### 1. Running Synthetic Metal Artifact Generation
 
+To simulate metal artifacts on a clean 3D CT volume using an implant mask:
 To simulate realistic metal artifacts on a clean 3D CT volume using an implant mask:
 
 ```bash
@@ -265,6 +330,7 @@ python Main.py generate \
   --metal titanium
 ```
 
+Or run directly via the installed CLI:
 Or run via the installed CLI:
 ```bash
 ct-mar-generate \
@@ -282,11 +348,14 @@ ct-mar-generate \
 
 ---
 
+### Task 2: Metal Artifact Suppression (Inference)
 ### 2. Running Metal Artifact Suppression (MAR)
 
+To restore an artifact-corrupted CT volume using pretrained models:
 #### 2.1. Anatomy-Conditioned Model (`anatomy`)
 Runs latent diffusion conditioned only on the patient's artifacted CT scan:
 
+#### Model 1: Anatomy-Conditioned LDM
 ```bash
 # Using unified Main.py
 python Main.py suppress \
@@ -296,6 +365,7 @@ python Main.py suppress \
   --steps 500
 ```
 
+#### Model 2: Anatomy + Metadata Conditioned LDM
 Or via CLI:
 ```bash
 ct-mar-suppress --input artifacted.nii.gz --output-dir outputs/restored --model anatomy
@@ -316,6 +386,7 @@ python Main.py suppress \
   --steps 500
 ```
 
+You can also provide the sidecar metadata JSON file directly:
 Or provide the sidecar metadata JSON file directly:
 ```bash
 python Main.py suppress \
@@ -325,19 +396,27 @@ python Main.py suppress \
   --model anatomy_metadata
 ```
 
+Or use the CLI command:
+```bash
+ct-mar-suppress --input artifacted.nii.gz --output-dir outputs/restored --model anatomy
+```
+
 **Outputs generated:**
 1. `*_restored_{model}.nii.gz`: Restored CT volume in original Hounsfield Units, preserving the original NIfTI geometry and affine coordinates.
 2. `*_preview_{model}.png`: Side-by-side axial slice comparison between the input artifacted CT and the restored result.
 
 ---
 
+## Python API
 ### Python API Integration
 
+You can also integrate the models directly into Python workflows:
 You can integrate both models directly into Python scripts and pipelines:
 
 ```python
 from ct_mar.inference import MARPipeline
 
+# Initialize pipeline
 # Initialize pipeline (loads Model 2.2: Anatomy + Metadata)
 pipeline = MARPipeline.from_pretrained(
     model_type="anatomy_metadata",
@@ -345,6 +424,7 @@ pipeline = MARPipeline.from_pretrained(
     config_dir="configs/inference",
 )
 
+# Run suppression
 # Run artifact suppression
 restored_path = pipeline.suppress(
     image_path="sample_artifacted.nii.gz",

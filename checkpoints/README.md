@@ -70,3 +70,4 @@ checkpoints/
 ├── anatomy_ldm_checkpoint.pth
 └── anatomy_metadata_ldm_checkpoint.pth
 ```
+

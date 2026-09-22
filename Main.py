@@ -2,6 +2,9 @@
 """
 Main execution script for 3D Latent Diffusion Models for CT Metal Artifact Suppression (3D-LDMs-for-CT-MAR).
 
+Supports two primary tasks:
+1. 'suppress': Metal artifact suppression using 3D conditioned Latent Diffusion Models.
+2. 'generate': Synthetic metal artifact simulation on clean 3D CT volumes using ASTRA CUDA.
 Supports:
 1. 'generate': Synthetic metal artifact simulation on clean 3D CT volumes using ASTRA CUDA.
 2. 'suppress': Metal artifact suppression using 3D conditioned Latent Diffusion Models (2.1 Anatomy, 2.2 Anatomy+Metadata).
@@ -20,8 +23,10 @@ def build_parser() -> argparse.ArgumentParser:
         prog="python Main.py",
         description="3D Latent Diffusion Models for CT Metal Artifact Suppression (DGM4MICCAI 2026)",
     )
+    subparsers = parser.add_subparsers(dest="task", help="Select task: 'suppress' or 'generate'")
     subparsers = parser.add_subparsers(dest="task", help="Select task: 'generate', 'suppress', or 'download'")
 
+    # --- Task 1: Artifact Suppression ---
     # --- 1. Synthetic Artifact Generation ---
     generate_parser = subparsers.add_parser(
         "generate",
@@ -151,11 +156,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Disable automatic side-by-side PNG slice comparison export.",
     )
 
+    # --- Task 2: Synthetic Artifact Generation ---
+    generate_parser = subparsers.add_parser(
+        "generate",
+        help="Generate synthetic metal artifacts from clean CT volumes using ASTRA CUDA simulation.",
     # --- 3. Pretrained Weights Download ---
     download_parser = subparsers.add_parser(
         "download",
         help="Download pretrained model checkpoints from Hugging Face Hub.",
     )
+    generate_parser.add_argument(
+        "--input",
+        "-i",
+        type=Path,
+        required=True,
+        help="Path to clean 3D CT volume (.nii or .nii.gz).",
     download_parser.add_argument(
         "--model",
         "-m",
@@ -163,30 +178,53 @@ def build_parser() -> argparse.ArgumentParser:
         default="all",
         help="Model checkpoint to download ('all', 'vqvae', 'anatomy', 'anatomy_metadata').",
     )
+    generate_parser.add_argument(
     download_parser.add_argument(
         "--output_dir",
         "-o",
         type=Path,
+        required=True,
+        help="Directory to save simulated artifacted CT, target, and metadata.",
         default=Path("checkpoints"),
         help="Directory to store downloaded weights (default: checkpoints).",
     )
+    generate_parser.add_argument(
+        "--implant_mask",
+        type=Path,
+        default=None,
+        help="Path to implant segmentation mask NIfTI.",
     download_parser.add_argument(
         "--repo_id",
         type=str,
         default="ETRO-MIT/3D-LDMs-for-CT-MAR",
         help="Hugging Face repository ID.",
     )
+    generate_parser.add_argument(
+        "--implant_name",
     download_parser.add_argument(
         "--token",
         type=str,
+        default="bipolar_hip_implant",
+        help="Implant name from implant library (e.g. 'bipolar_hip_implant').",
         default=None,
         help="Hugging Face access token (optional).",
     )
+    generate_parser.add_argument(
+        "--metal",
+        choices=["titanium", "iron"],
+        default="titanium",
+        help="Implant material (titanium=3000 HU, iron=4000 HU).",
     download_parser.add_argument(
         "--force",
         "-f",
         action="store_true",
         help="Force re-download even if files already exist.",
+    )
+    generate_parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Seed for placement and noise generation.",
     )
 
     return parser
@@ -264,10 +302,13 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_help()
         return 1
 
+    if args.task == "suppress":
     if args.task == "generate":
         return run_generation(args)
     elif args.task == "suppress":
         return run_suppression(args)
+    elif args.task == "generate":
+        return run_generation(args)
     elif args.task == "download":
         return run_download(args)
     else:

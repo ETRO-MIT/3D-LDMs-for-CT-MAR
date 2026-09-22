@@ -25,6 +25,9 @@ htmlcov/
 # Data, model weights, meshes, generated results, and experiment tracking
 /data/
 /outputs/
+/logs/
+/checkpoints/
+/implant_library/
 /checkpoints/*
 !/checkpoints/README.md
 /wandb/
