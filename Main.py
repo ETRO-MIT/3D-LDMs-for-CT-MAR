@@ -173,7 +173,7 @@ def build_parser() -> argparse.ArgumentParser:
     download_parser.add_argument(
         "--repo_id",
         type=str,
-        default="ETRO-MIT/3D-LDMs-for-CT-MAR",
+        default="xabimoreno/3D-LDMs-for-CT-MAR",
         help="Hugging Face repository ID.",
     )
     download_parser.add_argument(

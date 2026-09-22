@@ -33,7 +33,7 @@ import urllib.request
 from pathlib import Path
 
 # Official Hugging Face repository
-DEFAULT_REPO_ID = "ETRO-MIT/3D-LDMs-for-CT-MAR"
+DEFAULT_REPO_ID = "xabimoreno/3D-LDMs-for-CT-MAR"
 
 # Checkpoint definitions
 CHECKPOINT_FILES = {

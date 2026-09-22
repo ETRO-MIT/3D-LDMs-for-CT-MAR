@@ -2,7 +2,7 @@
 
 [![Paper](https://img.shields.io/badge/Paper-DGM4MICCAI--2026-blue)](https://github.com/ETRO-MIT/3D-LDMs-for-CT-MAR)
 [![Code](https://img.shields.io/badge/License-Apache--2.0-green.svg)](LICENSE.md)
-[![Weights](https://img.shields.io/badge/HuggingFace-Model--Weights-yellow)](https://huggingface.co/ETRO-MIT/3D-LDMs-for-CT-MAR)
+[![Weights](https://img.shields.io/badge/HuggingFace-Model--Weights-yellow)](https://huggingface.co/xabimoreno/3D-LDMs-for-CT-MAR)
 
 Official repository for **Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression** (Presented at DGM4MICCAI, MICCAI 2026 Workshop).
 
@@ -18,7 +18,7 @@ This repository provides an end-to-end framework supporting:
 
 > **Related Sources:**
 > - **Paper:** *Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression*, DGM4MICCAI 2026 (In press / Preprint).
-> - **Pretrained Weights:** Hosted on [Hugging Face](https://huggingface.co/ETRO-MIT/3D-LDMs-for-CT-MAR).
+> - **Pretrained Weights:** Hosted on [Hugging Face](https://huggingface.co/xabimoreno/3D-LDMs-for-CT-MAR).
 > - **Organization:** [ETRO - Department of Electronics and Informatics](https://www.etrovub.be/), Vrije Universiteit Brussel (VUB) and [imec](https://www.imec-int.com/).
 
 ---

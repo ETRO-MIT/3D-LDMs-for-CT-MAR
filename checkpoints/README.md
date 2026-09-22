@@ -52,9 +52,9 @@ You can also use the official `huggingface-cli`:
 pip install huggingface_hub
 
 # Download to the checkpoints directory
-huggingface-cli download ETRO-MIT/3D-LDMs-for-CT-MAR vqvae_checkpoint.pth --local-dir checkpoints/
-huggingface-cli download ETRO-MIT/3D-LDMs-for-CT-MAR anatomy_ldm_checkpoint.pth --local-dir checkpoints/
-huggingface-cli download ETRO-MIT/3D-LDMs-for-CT-MAR anatomy_metadata_ldm_checkpoint.pth --local-dir checkpoints/
+huggingface-cli download xabimoreno/3D-LDMs-for-CT-MAR vqvae_checkpoint.pth --local-dir checkpoints/
+huggingface-cli download xabimoreno/3D-LDMs-for-CT-MAR anatomy_ldm_checkpoint.pth --local-dir checkpoints/
+huggingface-cli download xabimoreno/3D-LDMs-for-CT-MAR anatomy_metadata_ldm_checkpoint.pth --local-dir checkpoints/
 ```
 
 ---
