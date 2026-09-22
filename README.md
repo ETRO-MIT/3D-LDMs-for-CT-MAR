@@ -7,10 +7,10 @@
 Official repository for **Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression** (Presented at DGM4MICCAI, MICCAI 2026 Workshop).
 
 This repository provides an end-to-end framework supporting:
-- **Synthetic Metal Artifact Generation**: A full 3D polychromatic projection and reconstruction simulation pipeline based on ASTRA CUDA, anatomical segmentations, and an anatomy-aware implant library.
-- **CT Metal Artifact Suppression (MAR)**: The first large-volume 3D image-domain latent diffusion framework for CT metal artifact suppression, evaluating two conditioning strategies:
-  - **Anatomy-Conditioned LDM**: Conditioned on the artifacted CT image prior via latent channel concatenation.
-  - **Anatomy + Metadata-Conditioned LDM**: Conditioned on the artifacted CT prior and cross-attention metadata tokens (anatomical region, implant laterality, and metal material).
+1. **Synthetic Metal Artifact Generation**: A full 3D polychromatic projection and reconstruction simulation pipeline based on ASTRA CUDA, anatomical segmentations, and an anatomy-aware implant library.
+2. **CT Metal Artifact Suppression (MAR)**: The first large-volume 3D image-domain latent diffusion framework for CT metal artifact suppression, evaluating two conditioning strategies:
+   - **Anatomy-Conditioned LDM**: Conditioned on the artifacted CT image prior via latent channel concatenation.
+   - **Anatomy + Metadata-Conditioned LDM**: Conditioned on the artifacted CT prior and cross-attention metadata tokens (anatomical region, implant laterality, and metal material).
 
 ⚠️ **Notes:**
 - The provided models and pipelines are intended for **research purposes only** and have not been validated for clinical or commercial use.
