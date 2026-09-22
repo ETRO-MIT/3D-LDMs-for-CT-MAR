@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this software or pretrained models, please cite our paper as below."
+authors:
+  - family-names: "Moreno Casado"
+    given-names: "Xabier"
+    affiliation: "Vrije Universiteit Brussel & imec"
+  - family-names: "Vandemeulebroucke"
+    given-names: "Jef"
+    affiliation: "Vrije Universiteit Brussel & imec"
+  - family-names: "Ceranka"
+    given-names: "Jakub"
+    affiliation: "Vrije Universiteit Brussel & imec"
+title: "Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression"
+version: 0.1.0
+date-released: 2026-09-22
+repository-code: "https://github.com/ETRO-MIT/3D-LDMs-for-CT-MAR"
+license: "Apache-2.0"
+keywords:
+  - "computed tomography"
+  - "metal artifact reduction"
+  - "latent diffusion models"
+  - "deep generative models"
+  - "medical imaging"
+preferred-citation:
+  type: conference-paper
+  authors:
+    - family-names: "Moreno Casado"
+      given-names: "Xabier"
+    - family-names: "Vandemeulebroucke"
+      given-names: "Jef"
+    - family-names: "Ceranka"
+      given-names: "Jakub"
+  title: "Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression"
+  collection-title: "Deep Generative Models for Medical Imaging (DGM4MICCAI), MICCAI Workshop"
+  year: 2026
