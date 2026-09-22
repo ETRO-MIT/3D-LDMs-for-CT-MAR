@@ -179,6 +179,20 @@ Verify the installation:
 python -c "import ct_mar; print('ct-mar version:', ct_mar.__version__)"
 ```
 
+### Pretrained Model Weights
+
+Pretrained model checkpoints (Stage 1 VQ-VAE, Model 2.1 Anatomy LDM, and Model 2.2 Anatomy+Metadata LDM) can be downloaded automatically from the Hugging Face Hub:
+
+```bash
+# Download all models into checkpoints/
+python DownloadWeights.py
+
+# Or via Main.py:
+python Main.py download
+```
+
+To download individual checkpoints or specify custom directories, see [checkpoints/README.md](checkpoints/README.md).
+
 ---
 
 ## Repository Structure
@@ -190,6 +204,8 @@ python -c "import ct_mar; print('ct-mar version:', ct_mar.__version__)"
 │   ├── Figure_2.png             # Paired synthetic comparisons (Figure 2)
 │   ├── Figure_3.png             # Trade-off analysis between 2.1 and 2.2 (Figure 3)
 │   └── Figure_4.png             # Real clinical evaluation on CLINIC-metal (Figure 4)
+├── checkpoints/                 # Pretrained model weights
+│   └── README.md                # Checkpoint descriptions and download instructions
 ├── configs/
 │   ├── inference/               # Model inference configurations
 │   │   ├── vqvae_ds4.yaml       # Shared Stage 1 VQ-VAE architecture
@@ -225,6 +241,7 @@ python -c "import ct_mar; print('ct-mar version:', ct_mar.__version__)"
 │   ├── test_synthesis.py
 │   ├── test_preprocessing.py
 │   └── test_inference.py
+├── DownloadWeights.py           # Pretrained checkpoint downloader from Hugging Face
 ├── Main.py                      # Unified top-level execution entry point
 ├── pyproject.toml               # Package specifications and entry points
 ├── THIRD_PARTY_NOTICES.md       # Upstream MedLoRD and MONAI notices
