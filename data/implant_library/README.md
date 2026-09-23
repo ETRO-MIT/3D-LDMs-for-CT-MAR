@@ -21,3 +21,4 @@ These implants are loaded automatically by `ct-mar-generate` based on the target
 - **Spine CTs (`spine`):** Selects from `spine_screws/`.
 
 Custom implants can be added by placing additional 1 mm isotropic binary `.nii.gz` masks in the appropriate folder and updating `metadata.json`.
+
