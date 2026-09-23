@@ -45,7 +45,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--anatomy_dir",
         type=Path,
         default=None,
-        help="Directory containing TotalSegmentator anatomy masks for intelligent placement.",
+        help="Directory containing TotalSegmentator anatomy masks for intelligent placement. If omitted, TotalSegmentator runs automatically in a temporary directory.",
+    )
+    generate_parser.add_argument(
+        "--keep_anatomy",
+        action="store_true",
+        help="Keep generated TotalSegmentator anatomy masks in output_dir/anatomy instead of auto-deleting them.",
     )
     generate_parser.add_argument(
         "--implant_library",
@@ -224,6 +229,8 @@ def run_generation(args: argparse.Namespace) -> int:
             cmd_args.extend(["--anatomy-dir", str(args.anatomy_dir)])
         if args.implant_id:
             cmd_args.extend(["--implant-id", str(args.implant_id)])
+        if args.keep_anatomy:
+            cmd_args.append("--keep-anatomy")
 
     sys.argv = ["ct-mar-generate"] + cmd_args
     return generate_main() or 0

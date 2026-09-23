@@ -51,8 +51,8 @@ def load_totalseg_labels(labels_dir: Path | None, shape=None, affine=None) -> di
             raise ValueError(f"Anatomy mask must match the CT shape and affine: {path}")
         labels[_strip_nii_suffix(path)] = (data > 0).astype(np.uint8)
     if not labels:
-        raise ValueError(f"No anatomy masks found in {labels_dir}")
-    return labels if labels else None
+        return None
+    return labels
 
 
 def main():
@@ -73,7 +73,12 @@ def main():
         "--anatomy-dir",
         type=Path,
         default=None,
-        help="Optional TotalSegmentator labels directory (one NIfTI per structure).",
+        help="Optional TotalSegmentator labels directory (one NIfTI per structure). If omitted, TotalSegmentator runs automatically in a temporary folder.",
+    )
+    parser.add_argument(
+        "--keep-anatomy",
+        action="store_true",
+        help="Keep generated TotalSegmentator masks in output_dir/anatomy instead of auto-deleting them.",
     )
     parser.add_argument(
         "--implant-library",
@@ -212,84 +217,119 @@ def main():
     config.fdk_filter = args.fdk_filter.lower()
     placement_metadata = config.placement_metadata.copy() if config.placement_metadata else {}
 
-    if args.mask is not None:
-        metal_mask, mask_affine = load_nifti(args.mask)
-        if metal_mask.shape != volume_hu.shape or not np.allclose(mask_affine, affine):
-            parser.error("The implant mask must match the CT shape and affine.")
-        metal_mask = (metal_mask > 0).astype(np.uint8)
+    temp_dir = None
+    anatomy_dir_to_use = args.anatomy_dir
+
+    if args.mask is None and anatomy_dir_to_use is None:
+        import os
+        import shutil
+        vsc_scratch = os.environ.get("VSC_SCRATCH")
+        if vsc_scratch:
+            weights_path = Path(vsc_scratch) / "totalseg_weights"
+            if weights_path.exists():
+                os.environ["TOTALSEG_WEIGHTS_PATH"] = str(weights_path)
+
+        if shutil.which("TotalSegmentator"):
+            from ct_mar.synthesis.preprocessing.run_totalseg import run_totalseg
+            if args.keep_anatomy:
+                target_anatomy_dir = args.output_dir / "anatomy"
+                target_anatomy_dir.mkdir(parents=True, exist_ok=True)
+                anatomy_dir_to_use = target_anatomy_dir
+            else:
+                import tempfile
+                temp_dir = tempfile.TemporaryDirectory(prefix="ct_mar_anatomy_")
+                anatomy_dir_to_use = Path(temp_dir.name)
+
+            print(f"[synthesis] Running on-the-fly TotalSegmentator segmentation into {anatomy_dir_to_use}...")
+            rois = ["hip_left", "hip_right", "femur_left", "femur_right",
+                    "vertebrae_L1", "vertebrae_L2", "vertebrae_L3", "vertebrae_L4", "vertebrae_L5"]
+            run_totalseg(args.image, anatomy_dir_to_use, fast=True, roi_subset=rois)
+        else:
+            print("[synthesis] TotalSegmentator not found in PATH; falling back to default anatomical placement.")
+
+    try:
+        if args.mask is not None:
+            metal_mask, mask_affine = load_nifti(args.mask)
+            if metal_mask.shape != volume_hu.shape or not np.allclose(mask_affine, affine):
+                parser.error("The implant mask must match the CT shape and affine.")
+            metal_mask = (metal_mask > 0).astype(np.uint8)
+            placement_metadata.update(
+                {
+                    "region": "unknown",
+                    "implant_source": "provided_mask",
+                    "selection_mode": "provided_mask",
+                    "mask_path": str(args.mask),
+                    "metal_name": config.metal_name,
+                    "metal_hu": float(args.metal_hu),
+                }
+            )
+        else:
+            totalseg_labels = load_totalseg_labels(anatomy_dir_to_use, volume_hu.shape, affine)
+            region_masks = map_labels_to_regions(totalseg_labels) if totalseg_labels else None
+            metal_mask, args.metal_hu, config.metal_name, placement_metadata = anatomy_aware_metal_mask(
+                volume_hu,
+                affine,
+                metal_radius=args.metal_radius,
+                rng=np.random.default_rng(args.seed),
+                totalseg_labels=totalseg_labels,
+                region_masks=region_masks,
+                implant_library=args.implant_library,
+                implant_category=args.implant_category,
+                implant_id=args.implant_id,
+                implant_random=args.implant_random,
+                implant_source=args.implant_source,
+                primitive_shape=args.primitive_shape,
+                primitive_length=args.primitive_length,
+            )
+        config.metal_hu = float(args.metal_hu)
+        if not np.any(metal_mask):
+            raise ValueError("The selected implant mask is empty after placement.")
+        placement_metadata["seed"] = args.seed
+        require_astra_gpu()
+        calibrate_water_correction(config, phantom_size=min(64, volume_hu.shape[0]), phantom_radius=min(20, volume_hu.shape[0] // 3))
+
+        simulated_hu = metal_artifact_simulation_volume(
+            volume_hu,
+            config,
+            metal_mask=metal_mask,
+            metal_hu=args.metal_hu,
+            metal_radius=args.metal_radius,
+            photon_scale=args.photon_scale,
+            progress=True,
+        )
+        if args.clip is not None:
+            clip_min, clip_max = args.clip
+            simulated_hu = np.clip(simulated_hu, a_min=clip_min, a_max=clip_max)
+
+        case_id = _strip_nii_suffix(args.image)
+        synth_stem = f"synth_{case_id}"
+        implant_only_stem = f"implant_only_{case_id}"
+        output_image_path = args.output_dir / f"{synth_stem}.nii.gz"
+        output_implant_only_path = args.output_dir / f"{implant_only_stem}.nii.gz"
+        output_mask_path = args.output_dir / f"{synth_stem}_metal_mask.nii.gz"
+        output_json_path = args.output_dir / f"{synth_stem}.json"
+        implant_only_hu = volume_hu.copy()
+        implant_only_hu[metal_mask > 0] = float(args.metal_hu)
         placement_metadata.update(
             {
-                "region": "unknown",
-                "implant_source": "provided_mask",
-                "selection_mode": "provided_mask",
-                "mask_path": str(args.mask),
-                "metal_name": config.metal_name,
-                "metal_hu": float(args.metal_hu),
+                "case_id": case_id,
+                "input_image_path": str(args.image),
+                "output_image_path": str(output_image_path),
+                "implant_only_image_path": str(output_implant_only_path),
             }
         )
-    else:
-        totalseg_labels = load_totalseg_labels(args.anatomy_dir, volume_hu.shape, affine)
-        region_masks = map_labels_to_regions(totalseg_labels) if totalseg_labels else None
-        metal_mask, args.metal_hu, config.metal_name, placement_metadata = anatomy_aware_metal_mask(
-            volume_hu,
-            affine,
-            metal_radius=args.metal_radius,
-            rng=np.random.default_rng(args.seed),
-            totalseg_labels=totalseg_labels,
-            region_masks=region_masks,
-            implant_library=args.implant_library,
-            implant_category=args.implant_category,
-            implant_id=args.implant_id,
-            implant_random=args.implant_random,
-            implant_source=args.implant_source,
-            primitive_shape=args.primitive_shape,
-            primitive_length=args.primitive_length,
-        )
-    config.metal_hu = float(args.metal_hu)
-    if not np.any(metal_mask):
-        raise ValueError("The selected implant mask is empty after placement.")
-    placement_metadata["seed"] = args.seed
-    require_astra_gpu()
-    calibrate_water_correction(config, phantom_size=min(64, volume_hu.shape[0]), phantom_radius=min(20, volume_hu.shape[0] // 3))
+        config.placement_metadata = placement_metadata
 
-    simulated_hu = metal_artifact_simulation_volume(
-        volume_hu,
-        config,
-        metal_mask=metal_mask,
-        metal_hu=args.metal_hu,
-        metal_radius=args.metal_radius,
-        photon_scale=args.photon_scale,
-        progress=True,
-    )
-    if args.clip is not None:
-        clip_min, clip_max = args.clip
-        simulated_hu = np.clip(simulated_hu, a_min=clip_min, a_max=clip_max)
-
-    case_id = _strip_nii_suffix(args.image)
-    synth_stem = f"synth_{case_id}"
-    implant_only_stem = f"implant_only_{case_id}"
-    output_image_path = args.output_dir / f"{synth_stem}.nii.gz"
-    output_implant_only_path = args.output_dir / f"{implant_only_stem}.nii.gz"
-    output_mask_path = args.output_dir / f"{synth_stem}_metal_mask.nii.gz"
-    output_json_path = args.output_dir / f"{synth_stem}.json"
-    implant_only_hu = volume_hu.copy()
-    implant_only_hu[metal_mask > 0] = float(args.metal_hu)
-    placement_metadata.update(
-        {
-            "case_id": case_id,
-            "input_image_path": str(args.image),
-            "output_image_path": str(output_image_path),
-            "implant_only_image_path": str(output_implant_only_path),
-        }
-    )
-    config.placement_metadata = placement_metadata
-
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    save_nifti(output_implant_only_path, implant_only_hu.astype(np.float32), affine)
-    save_nifti(output_image_path, simulated_hu.astype(np.float32), affine)
-    save_nifti(output_mask_path, metal_mask.astype(np.uint8), affine)
-    save_config_as_json(output_json_path, config)
-    print(f"Saved outputs to {args.output_dir}")
+        args.output_dir.mkdir(parents=True, exist_ok=True)
+        save_nifti(output_implant_only_path, implant_only_hu.astype(np.float32), affine)
+        save_nifti(output_image_path, simulated_hu.astype(np.float32), affine)
+        save_nifti(output_mask_path, metal_mask.astype(np.uint8), affine)
+        save_config_as_json(output_json_path, config)
+        print(f"Saved outputs to {args.output_dir}")
+    finally:
+        if temp_dir is not None:
+            print("[synthesis] Cleaning up temporary anatomy segmentation directory...")
+            temp_dir.cleanup()
 
 
 if __name__ == "__main__":

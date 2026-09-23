@@ -13,7 +13,7 @@ def main():
     parser.add_argument("--input-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--implant-library", type=Path, default=Path("data/implant_library"))
-    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--keep-segmentations", action="store_true", help="Keep intermediate anatomy segmentations.")
     args, simulation_args = parser.parse_known_args()
     source, output = args.input_dir.resolve(), args.output_dir.resolve()
     if output == source or source in output.parents:
@@ -34,12 +34,17 @@ def main():
         if case_dir.exists():
             parser.error(f"Case output already exists; use a new output directory: {case_dir}")
         anatomy = case_dir / "anatomy"
-        subprocess.run([sys.executable, "-m", "ct_mar.synthesis.preprocessing.run_totalseg",
-                        "--image", str(image), "--output-dir", str(anatomy), "--fast"], check=True)
-        subprocess.run([sys.executable, "-m", "ct_mar.synthesis.generate",
-                        "--image", str(image), "--anatomy-dir", str(anatomy),
-                        "--output-dir", str(case_dir), "--implant-library", str(args.implant_library.resolve()),
-                        "--seed", str(args.seed + idx), *simulation_args], check=True)
+        try:
+            subprocess.run([sys.executable, "-m", "ct_mar.synthesis.preprocessing.run_totalseg",
+                            "--image", str(image), "--output-dir", str(anatomy), "--fast"], check=True)
+            subprocess.run([sys.executable, "-m", "ct_mar.synthesis.generate",
+                            "--image", str(image), "--anatomy-dir", str(anatomy),
+                            "--output-dir", str(case_dir), "--implant-library", str(args.implant_library.resolve()),
+                            "--seed", str(args.seed + idx), *simulation_args], check=True)
+        finally:
+            if not args.keep_segmentations and anatomy.exists():
+                import shutil
+                shutil.rmtree(anatomy)
 
 
 if __name__ == "__main__":
