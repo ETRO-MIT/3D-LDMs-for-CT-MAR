@@ -221,13 +221,7 @@ def main():
     anatomy_dir_to_use = args.anatomy_dir
 
     if args.mask is None and anatomy_dir_to_use is None:
-        import os
         import shutil
-        vsc_scratch = os.environ.get("VSC_SCRATCH")
-        if vsc_scratch:
-            weights_path = Path(vsc_scratch) / "totalseg_weights"
-            if weights_path.exists():
-                os.environ["TOTALSEG_WEIGHTS_PATH"] = str(weights_path)
 
         if shutil.which("TotalSegmentator"):
             from ct_mar.synthesis.preprocessing.run_totalseg import run_totalseg
