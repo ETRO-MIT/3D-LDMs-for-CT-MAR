@@ -372,6 +372,11 @@ def load_implant_from_library(
     region_masks: Dict[Region, np.ndarray] | None = None,
 ) -> tuple[np.ndarray | None, dict | None]:
     category = implant_category or REGION_TO_IMPLANT_CATEGORY.get(region)
+    if category is None and implant_library.exists():
+        available_cats = sorted([d.name for d in implant_library.iterdir() if d.is_dir() and (d / "metadata.json").exists()])
+        if available_cats:
+            category = str(rng.choice(available_cats))
+            print(f"[anatomy] Region is unknown; randomly selected library category: '{category}'")
     if category is None:
         return None, None
     category_dir = implant_library / category
