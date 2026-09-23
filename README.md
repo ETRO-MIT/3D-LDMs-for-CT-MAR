@@ -288,10 +288,14 @@ ct-mar-generate \
 ```
 
 **Outputs generated:**
-1. `*_artifact.nii.gz`: Synthesized CT volume with realistic metal artifacts.
-2. `*_clean.nii.gz`: Paired ground-truth CT with clean implant insertion.
-3. `*_metal_mask.nii.gz`: Binary mask of the inserted metal implant.
-4. `*_metadata.json`: Simulation parameters and metadata attributes.
+For an input CT `case_001.nii.gz`:
+1. `synth_case_001.nii.gz`: Synthesized CT volume with realistic metal artifacts.
+2. `implant_only_case_001.nii.gz`: Paired ground-truth CT with clean implant insertion (target for training).
+3. `synth_case_001_metal_mask.nii.gz`: Binary mask of the inserted metal implant.
+4. `synth_case_001.json`: Simulation parameters, selected implant ID, region, and metadata.
+
+> [!TIP]
+> The default simulation geometry matches the Master's Thesis: 360 projection angles, $256 \times 256$ detector grid, $\text{SOD}=30\text{ cm}$, $\text{SDD}=60\text{ cm}$, and `detector_spacing = 0.5 cm` ($64\text{ cm}$ field-of-view at isocenter to prevent anatomical truncation). These can be customized via `--detector_spacing`, `--detector_pixels`, `--angle_num`, etc.
 
 ---
 
