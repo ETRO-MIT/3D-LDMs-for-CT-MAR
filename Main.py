@@ -82,6 +82,80 @@ def build_parser() -> argparse.ArgumentParser:
         default=42,
         help="Seed for placement and noise generation.",
     )
+    generate_parser.add_argument(
+        "--detector_spacing",
+        type=float,
+        default=0.5,
+        help="Detector pixel spacing in cm (default: 0.5). A value of 0.5 cm covers a 64 cm FOV, ensuring implants are not truncated.",
+    )
+    generate_parser.add_argument(
+        "--detector_pixels",
+        type=int,
+        default=256,
+        help="Detector grid size in pixels (default: 256).",
+    )
+    generate_parser.add_argument(
+        "--angle_num",
+        type=int,
+        default=360,
+        help="Number of projection angles over 360 degrees (default: 360).",
+    )
+    generate_parser.add_argument(
+        "--photon_scale",
+        type=float,
+        default=1.0,
+        help="Multiplier for incident photon count (default: 1.0).",
+    )
+    generate_parser.add_argument(
+        "--sod_cm",
+        type=float,
+        default=30.0,
+        help="Source-to-origin distance in cm (default: 30.0).",
+    )
+    generate_parser.add_argument(
+        "--sdd_cm",
+        type=float,
+        default=60.0,
+        help="Source-to-detector distance in cm (default: 60.0).",
+    )
+    generate_parser.add_argument(
+        "--fdk_filter",
+        type=str,
+        default="ram-lak",
+        help="FDK reconstruction filter (default: ram-lak).",
+    )
+    generate_parser.add_argument(
+        "--implant_category",
+        type=str,
+        default=None,
+        help="Implant category folder under data/implant_library (e.g. hip_implants, spine_screws).",
+    )
+    generate_parser.add_argument(
+        "--implant_source",
+        choices=["library", "primitive"],
+        default="library",
+        help="Source for implant: 'library' or 'primitive'.",
+    )
+    generate_parser.add_argument(
+        "--primitive_shape",
+        choices=["sphere", "cylinder"],
+        default="sphere",
+        help="Primitive shape if implant_source is primitive.",
+    )
+    generate_parser.add_argument(
+        "--primitive_length",
+        type=int,
+        default=None,
+        help="Length of cylinder in voxels if primitive_shape is cylinder.",
+    )
+    generate_parser.add_argument(
+        "--clip",
+        type=float,
+        nargs=2,
+        metavar=("MIN", "MAX"),
+        default=None,
+        help="Clip output HU to [MIN, MAX] before saving.",
+    )
 
     # --- 2. Metal Artifact Suppression (2.1 Anatomy, 2.2 Anatomy+Metadata) ---
     suppress_parser = subparsers.add_parser(
@@ -216,8 +290,22 @@ def run_generation(args: argparse.Namespace) -> int:
         "--image", str(args.input),
         "--output-dir", str(args.output_dir),
         "--seed", str(args.seed),
+        "--metal", args.metal,
         "--metal-hu", "3000.0" if args.metal == "titanium" else "4000.0",
+        "--detector-spacing", str(args.detector_spacing),
+        "--detector-pixels", str(args.detector_pixels),
+        "--angle-num", str(args.angle_num),
+        "--photon-scale", str(args.photon_scale),
+        "--sod-cm", str(args.sod_cm),
+        "--sdd-cm", str(args.sdd_cm),
+        "--fdk-filter", str(args.fdk_filter),
+        "--implant-source", str(args.implant_source),
+        "--primitive-shape", str(args.primitive_shape),
     ]
+    if args.primitive_length is not None:
+        cmd_args.extend(["--primitive-length", str(args.primitive_length)])
+    if args.clip is not None:
+        cmd_args.extend(["--clip", str(args.clip[0]), str(args.clip[1])])
     if args.implant_mask:
         cmd_args.extend(["--mask", str(args.implant_mask)])
     else:
@@ -227,6 +315,8 @@ def run_generation(args: argparse.Namespace) -> int:
         ])
         if args.anatomy_dir:
             cmd_args.extend(["--anatomy-dir", str(args.anatomy_dir)])
+        if args.implant_category:
+            cmd_args.extend(["--implant-category", str(args.implant_category)])
         if args.implant_id:
             cmd_args.extend(["--implant-id", str(args.implant_id)])
         if args.keep_anatomy:

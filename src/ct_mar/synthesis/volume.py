@@ -91,6 +91,15 @@ def metal_artifact_simulation_volume(
     clean_recon_hu = mu2hu(clean_recon_mu, config.mu_water, config.mu_air)
     metal_recon_hu = mu2hu(metal_recon_mu, config.mu_water, config.mu_air)
     artifact_delta_hu = metal_recon_hu - clean_recon_hu
+    print(
+        f"[synthesis] Artifact delta HU: min={artifact_delta_hu.min():.1f}, "
+        f"max={artifact_delta_hu.max():.1f}, mean={artifact_delta_hu.mean():.1f}"
+    )
+    if float(np.abs(artifact_delta_hu).max()) < 10.0:
+        print(
+            "[synthesis] WARNING: Artifact delta HU is near zero! Check detector geometry "
+            "(e.g., --detector-spacing) to ensure metal projections are not truncated."
+        )
 
     final_hu = clean_hu + artifact_delta_hu
     final_hu[~body_mask] = clean_hu[~body_mask]

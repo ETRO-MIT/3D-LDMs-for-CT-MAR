@@ -460,6 +460,8 @@ def anatomy_aware_metal_mask(
     implant_source: str = "library",
     primitive_shape: str = "sphere",
     primitive_length: int | None = None,
+    metal_name: str | None = None,
+    metal_hu: float | None = None,
 ) -> tuple[np.ndarray, float, str, dict]:
     rng = rng or np.random.default_rng()
     region = detect_region(
@@ -470,7 +472,11 @@ def anatomy_aware_metal_mask(
         label_map=label_map,
         label_names=label_names,
     )
-    metal = choose_metal_for_region(region, rng)
+    if metal_name is not None:
+        name_clean = metal_name.strip().capitalize()
+        metal = Metal.IRON if name_clean.lower() == "iron" else Metal.TITANIUM
+    else:
+        metal = choose_metal_for_region(region, rng)
     metal_mask = None
     implant_metadata = None
     if implant_source == "library" and implant_library is not None:
@@ -501,7 +507,7 @@ def anatomy_aware_metal_mask(
             primitive_length=primitive_length,
         )
         used_primitive_fallback = True
-    metal_hu = METAL_HU.get(metal, METAL_HU[Metal.TITANIUM])
+    assigned_metal_hu = float(metal_hu) if metal_hu is not None else float(METAL_HU.get(metal, METAL_HU[Metal.TITANIUM]))
     metal_name = metal.value if isinstance(metal, Metal) else str(metal)
     label_name = None
     label_count = 0
@@ -550,7 +556,7 @@ def anatomy_aware_metal_mask(
         ),
         "implant_id_requested": implant_id,
         "metal_name": metal_name,
-        "metal_hu": metal_hu,
+        "metal_hu": assigned_metal_hu,
     }
     if implant_library is not None:
         placement_metadata["implant_library"] = str(implant_library)
@@ -563,4 +569,4 @@ def anatomy_aware_metal_mask(
             placement_metadata["primitive_length"] = (
                 primitive_length if primitive_length is not None else int(metal_radius * 2)
             )
-    return metal_mask, metal_hu, metal_name, placement_metadata
+    return metal_mask, assigned_metal_hu, metal_name, placement_metadata

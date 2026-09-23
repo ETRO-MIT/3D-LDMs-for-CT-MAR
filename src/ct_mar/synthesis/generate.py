@@ -136,6 +136,13 @@ def main():
         help="HU value to assign inside the metal mask before simulation.",
     )
     parser.add_argument(
+        "--metal",
+        type=str,
+        choices=["titanium", "iron"],
+        default=None,
+        help="Implant material: 'titanium' (3000 HU) or 'iron' (4000 HU). Defaults to region-based selection.",
+    )
+    parser.add_argument(
         "--metal-radius",
         type=int,
         default=10,
@@ -150,7 +157,7 @@ def main():
     parser.add_argument(
         "--angle-num",
         type=int,
-        default=180,
+        default=360,
         help="Number of gantry angles around z.",
     )
     parser.add_argument(
@@ -162,8 +169,8 @@ def main():
     parser.add_argument(
         "--detector-spacing",
         type=float,
-        default=0.1,
-        help="Detector pixel size (cm).",
+        default=0.5,
+        help="Detector pixel size (cm). Default 0.5 cm covers 64 cm FOV to prevent truncation.",
     )
     parser.add_argument(
         "--sod-cm",
@@ -274,6 +281,8 @@ def main():
                 implant_source=args.implant_source,
                 primitive_shape=args.primitive_shape,
                 primitive_length=args.primitive_length,
+                metal_name=args.metal,
+                metal_hu=args.metal_hu if args.metal is not None else None,
             )
         config.metal_hu = float(args.metal_hu)
         if not np.any(metal_mask):

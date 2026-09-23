@@ -28,7 +28,7 @@ def _vol_geom(volume: np.ndarray):
 
 def _proj_geom(config, angles: np.ndarray | None = None):
     if angles is None:
-        angles = np.linspace(0.0, np.pi, config.angle_num, endpoint=False, dtype=np.float32)
+        angles = np.linspace(0.0, 2.0 * np.pi, config.angle_num, endpoint=False, dtype=np.float32)
     scale = 1.0 / config.voxel_size_cm
     det_spacing = config.detector_spacing * scale
     source_origin = config.SOD_cm * scale

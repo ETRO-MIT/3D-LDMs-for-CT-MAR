@@ -26,9 +26,9 @@ class SimulationConfig:
     )
     polynomial_order_for_correction: int = 3
     voxel_size_cm: float = 0.1
-    angle_num: int = 180
+    angle_num: int = 360
     detector_pixels: int = 256
-    detector_spacing: float = 0.1  # cm
+    detector_spacing: float = 0.5  # cm (covers 64 cm FOV at 2.0x magnification)
     SOD_cm: float = 30.0
     SDD_cm: float = 60.0
     photon_scale: float = 1.0
