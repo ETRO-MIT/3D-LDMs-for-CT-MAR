@@ -158,7 +158,7 @@ pip install -e ".[inference]"
 # For synthetic generation and implant tools:
 pip install -e ".[synthesis,implant-tools]"
 
-# Or install all extras:
+# Or install all extras (includes TotalSegmentator, MONAI, and training tools):
 pip install -e ".[all]"
 ```
 
