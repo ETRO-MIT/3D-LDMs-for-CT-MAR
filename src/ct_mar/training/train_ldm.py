@@ -51,7 +51,7 @@ def main():
     stage1 = VQVAE(**vq_cfg["stage1"]["params"]).to(device)
     ckpt = torch.load(args.vqvae_ckpt, map_location="cpu")
     state = ckpt.get("state_dict", ckpt) if isinstance(ckpt, dict) else ckpt
-    stage1.load_state_dict({k.replace("module.", ""): v for k, v in state.items()})
+    stage1.load_state_dict({k.replace("module.", ""): v for k, v in state.items()}, strict=False)
     stage1.eval()
     for param in stage1.parameters():
         param.requires_grad = False

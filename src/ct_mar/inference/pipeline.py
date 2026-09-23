@@ -78,7 +78,7 @@ class MARPipeline:
             ckpt_path = _resolve_checkpoint(vqvae_checkpoint)
             ckpt = torch.load(ckpt_path, map_location="cpu")
             state = ckpt.get("state_dict", ckpt) if isinstance(ckpt, dict) else ckpt
-            self.vqvae.load_state_dict(_remove_module_prefix(state))
+            self.vqvae.load_state_dict(_remove_module_prefix(state), strict=False)
         self.vqvae.eval()
 
         # Load LDM
@@ -113,7 +113,7 @@ class MARPipeline:
                 state = ckpt["diffusion"]
             else:
                 state = ckpt.get("state_dict", ckpt) if isinstance(ckpt, dict) else ckpt
-            self.ldm.load_state_dict(_remove_module_prefix(state))
+            self.ldm.load_state_dict(_remove_module_prefix(state), strict=False)
         self.ldm.eval()
 
         # Scheduler and Inferer
