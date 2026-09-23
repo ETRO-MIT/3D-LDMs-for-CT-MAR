@@ -141,8 +141,14 @@ python Main.py suppress --input sample_artifacted.nii.gz --output_dir outputs/re
 ### Setup Instructions
 
 ```bash
-# 1. Create and activate virtual environment
-python3.11 -m venv .venv
+# 1. Create and activate environment
+
+# Option A: Conda (Recommended for GPU clusters / HPC)
+conda create -n ct-mar python=3.11 -y
+conda activate ct-mar
+
+# Option B: Python venv
+python3 -m venv .venv
 source .venv/bin/activate
 
 # 2. Install package and dependencies
