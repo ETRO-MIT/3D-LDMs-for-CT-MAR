@@ -6,13 +6,12 @@ From the repository root, activate a Python 3.11 environment and install:
 
 ```bash
 python -m pip install -e ".[synthesis]"
+
+# Install CUDA-enabled ASTRA Toolbox for GPU 3D simulation:
+conda install -c astra-toolbox -c conda-forge astra-toolbox -y
 ```
 
-For anatomy segmentation, install [TotalSegmentator](https://github.com/wasserth/TotalSegmentator)
-following its installation instructions. For 3D simulation, an NVIDIA GPU is required. Install [ASTRA](https://astra-toolbox.com/docs/install.html) for your platform
-and CUDA environment. Projection and FDK reconstruction use ASTRA exclusively.
-There is no CPU simulation path. Image preparation and file handling still use
-NumPy/SciPy on the CPU.
+For 3D projection and FDK reconstruction, an NVIDIA GPU and CUDA-enabled [ASTRA Toolbox](https://astra-toolbox.com/docs/install.html) are required. There is no CPU simulation path. Image preparation and file handling use NumPy/SciPy on the CPU.
 
 ## Inputs
 

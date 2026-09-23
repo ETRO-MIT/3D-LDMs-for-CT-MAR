@@ -160,6 +160,9 @@ pip install -e ".[synthesis,implant-tools]"
 
 # Or install all extras (includes TotalSegmentator, MONAI, and training tools):
 pip install -e ".[all]"
+
+# 3. (Optional for Task 1 GPU simulation) Install CUDA-enabled ASTRA Toolbox:
+conda install -c astra-toolbox -c conda-forge astra-toolbox -y
 ```
 
 Verify the installation:
