@@ -42,16 +42,28 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory to save simulated artifacted CT, target, and metadata.",
     )
     generate_parser.add_argument(
+        "--anatomy_dir",
+        type=Path,
+        default=None,
+        help="Directory containing TotalSegmentator anatomy masks for intelligent placement.",
+    )
+    generate_parser.add_argument(
+        "--implant_library",
+        type=Path,
+        default=Path("data/implant_library"),
+        help="Path to implant library directory (default: data/implant_library).",
+    )
+    generate_parser.add_argument(
         "--implant_mask",
         type=Path,
         default=None,
-        help="Path to implant segmentation mask NIfTI.",
+        help="Optional pre-aligned binary implant mask NIfTI (bypasses library selection).",
     )
     generate_parser.add_argument(
-        "--implant_name",
+        "--implant_id",
         type=str,
-        default="bipolar_hip_implant",
-        help="Implant name from implant library (e.g. 'bipolar_hip_implant').",
+        default=None,
+        help="Specific implant id from the library metadata.",
     )
     generate_parser.add_argument(
         "--metal",
@@ -196,15 +208,22 @@ def run_generation(args: argparse.Namespace) -> int:
     from ct_mar.synthesis.generate import main as generate_main
 
     cmd_args = [
-        "--ct_path", str(args.input),
-        "--output_dir", str(args.output_dir),
-        "--metal_name", str(args.metal),
+        "--image", str(args.input),
+        "--output-dir", str(args.output_dir),
         "--seed", str(args.seed),
+        "--metal-hu", "3000.0" if args.metal == "titanium" else "4000.0",
     ]
     if args.implant_mask:
-        cmd_args.extend(["--implant_mask_path", str(args.implant_mask)])
+        cmd_args.extend(["--mask", str(args.implant_mask)])
     else:
-        cmd_args.extend(["--implant_name", str(args.implant_name)])
+        cmd_args.extend([
+            "--implant-library", str(args.implant_library),
+            "--implant-random",
+        ])
+        if args.anatomy_dir:
+            cmd_args.extend(["--anatomy-dir", str(args.anatomy_dir)])
+        if args.implant_id:
+            cmd_args.extend(["--implant-id", str(args.implant_id)])
 
     sys.argv = ["ct-mar-generate"] + cmd_args
     return generate_main() or 0

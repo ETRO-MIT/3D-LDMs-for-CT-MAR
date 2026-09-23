@@ -253,6 +253,14 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 To simulate realistic metal artifacts on a clean 3D CT volume using an implant mask:
 
 ```bash
+# 1. Intelligent anatomy-aware simulation (selects and places implant automatically):
+python Main.py generate \
+  --input /path/to/clean_ct.nii.gz \
+  --anatomy_dir /path/to/totalseg_masks \
+  --output_dir outputs/synthetic_case \
+  --metal titanium
+
+# 2. Or using a pre-aligned custom implant mask:
 python Main.py generate \
   --input /path/to/clean_ct.nii.gz \
   --implant_mask /path/to/implant_mask.nii.gz \
@@ -263,10 +271,11 @@ python Main.py generate \
 Or run directly via the installed CLI:
 ```bash
 ct-mar-generate \
-  --ct_path /path/to/clean_ct.nii.gz \
-  --implant_mask_path /path/to/implant_mask.nii.gz \
-  --output_dir outputs/synthetic_case \
-  --metal_name titanium
+  --image /path/to/clean_ct.nii.gz \
+  --anatomy-dir /path/to/totalseg_masks \
+  --implant-library data/implant_library \
+  --implant-random \
+  --output-dir outputs/synthetic_case
 ```
 
 **Outputs generated:**
