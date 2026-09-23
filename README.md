@@ -250,17 +250,23 @@ To download individual checkpoints or specify custom directories, see [checkpoin
 
 ### Task 1: Synthetic Metal Artifact Generation
 
-To simulate realistic metal artifacts on a clean 3D CT volume using an implant mask:
+Simulate realistic 3D metal artifacts on a clean CT volume using ASTRA CUDA projection and FDK reconstruction:
 
 ```bash
-# 1. Intelligent anatomy-aware simulation (selects and places implant automatically):
+# 1. All-in-One (Recommended): On-the-fly anatomy segmentation, implant selection, and simulation
+python Main.py generate \
+  --input /path/to/clean_ct.nii.gz \
+  --output_dir outputs/synthetic_case \
+  --metal titanium
+
+# 2. Or using existing TotalSegmentator masks (skips re-segmentation):
 python Main.py generate \
   --input /path/to/clean_ct.nii.gz \
   --anatomy_dir /path/to/totalseg_masks \
   --output_dir outputs/synthetic_case \
   --metal titanium
 
-# 2. Or using a pre-aligned custom implant mask:
+# 3. Or using a custom pre-aligned implant mask:
 python Main.py generate \
   --input /path/to/clean_ct.nii.gz \
   --implant_mask /path/to/implant_mask.nii.gz \
@@ -268,13 +274,13 @@ python Main.py generate \
   --metal titanium
 ```
 
+> [!NOTE]
+> In **All-in-One mode** (Option 1), TotalSegmentator runs automatically in a temporary directory, detects the anatomical region (Hip vs Spine), randomly selects an implant from `data/implant_library/`, and determines the 3D position that maximizes bone overlap. Intermediate segmentation files are automatically deleted after simulation to save disk space (use `--keep_anatomy` to retain them).
+
 Or run directly via the installed CLI:
 ```bash
 ct-mar-generate \
   --image /path/to/clean_ct.nii.gz \
-  --anatomy-dir /path/to/totalseg_masks \
-  --implant-library data/implant_library \
-  --implant-random \
   --output-dir outputs/synthetic_case
 ```
 

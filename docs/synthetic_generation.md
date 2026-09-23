@@ -42,13 +42,21 @@ ct-mar-prepare --input-dir data/prepared --check-only
 
 ## Run one case
 
-Run these commands from the repository root, replacing `data/clean_ct.nii.gz` with
-your prepared CT path:
+### Option A: All-in-One (Automated on-the-fly segmentation)
+TotalSegmentator runs automatically in a temporary directory, selects and positions the implant based on bone overlap, and deletes the temporary masks when complete:
 
 ```bash
-python -m ct_mar.synthesis.preprocessing.run_totalseg \
-  --image data/clean_ct.nii.gz --output-dir outputs/anatomy --fast
+ct-mar-generate \
+  --image data/clean_ct.nii.gz \
+  --output-dir outputs/generated \
+  --seed 0
+```
+*(Pass `--keep-anatomy` if you want to preserve the generated anatomy masks under `output-dir/anatomy`).*
 
+### Option B: Using pre-computed anatomy masks
+If you already ran TotalSegmentator or have organ masks available:
+
+```bash
 ct-mar-generate \
   --image data/clean_ct.nii.gz \
   --anatomy-dir outputs/anatomy \
@@ -56,10 +64,6 @@ ct-mar-generate \
   --output-dir outputs/generated \
   --seed 0
 ```
-
-Existing aligned anatomy masks can be supplied directly. The optional
-`ct_mar.synthesis.preprocessing.filter_totalseg` module can filter small masks,
-but filtering is not required by the loader.
 
 The source mapping automatically selects `hip_implants` for hip and `spine_screws`
 for spine. Other categories require `--implant-category`, for example
