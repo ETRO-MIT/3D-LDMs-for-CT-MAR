@@ -1,0 +1,265 @@
+{
+  "implant_type": "hip_implants",
+  "typical_regions": [
+    "hip"
+  ],
+  "materials": [
+    "Titanium"
+  ],
+  "items": [
+    {
+      "id": "hip_with_gradient_lattice.nii",
+      "mask_file": "hip_with_gradient_lattice.nii.gz",
+      "source_mesh": "Hip with gradient lattice.stl",
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "cropped_shape": [
+        69,
+        37,
+        198
+      ],
+      "bbox_zyx": [
+        [
+          0,
+          69
+        ],
+        [
+          0,
+          37
+        ],
+        [
+          0,
+          198
+        ]
+      ],
+      "created_at": "2026-02-09T19:58:35",
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        -0.19778080480951885,
+        0.9802462693842608,
+        6.787590507831088e-05
+      ]
+    },
+    {
+      "id": "hip_with_uniform_lattice.nii",
+      "mask_file": "hip_with_uniform_lattice.nii.gz",
+      "source_mesh": "Hip with uniform lattice.stl",
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "cropped_shape": [
+        69,
+        38,
+        198
+      ],
+      "bbox_zyx": [
+        [
+          0,
+          69
+        ],
+        [
+          0,
+          38
+        ],
+        [
+          0,
+          198
+        ]
+      ],
+      "created_at": "2026-02-09T19:58:38",
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        -0.19606656680909565,
+        0.9805905880520008,
+        1.8777411400435243e-06
+      ]
+    },
+    {
+      "id": "hip_implant.nii",
+      "mask_file": "hip_implant.nii.gz",
+      "source_mesh": "Hip_Implant.stl",
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "cropped_shape": [
+        109,
+        53,
+        265
+      ],
+      "bbox_zyx": [
+        [
+          0,
+          109
+        ],
+        [
+          0,
+          53
+        ],
+        [
+          0,
+          265
+        ]
+      ],
+      "created_at": "2026-02-09T20:19:28",
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        -0.46521469285588407,
+        -0.14174479060433975,
+        0.8737755454849588
+      ]
+    },
+    {
+      "id": "bipolar_hip_prosthesis.nii",
+      "mask_file": "bipolar_hip_prosthesis.nii.gz",
+      "source_mesh": "bipolar hip prosthesis.stl",
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "cropped_shape": [
+        63,
+        54,
+        186
+      ],
+      "bbox_zyx": [
+        [
+          0,
+          63
+        ],
+        [
+          0,
+          54
+        ],
+        [
+          0,
+          186
+        ]
+      ],
+      "created_at": "2026-03-03T11:11:18",
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        -0.5351906815347195,
+        0.00016877599047970815,
+        0.8447312625403814
+      ],
+      "notes": "Manually flipped along axis 2 to correct head/stem direction in library orientation."
+    },
+    {
+      "id": "bipolar_acetabular_cup.nii",
+      "mask_file": "bipolar_acetabular_cup.nii.gz",
+      "source_mesh": "bipolar_acetabular_cup.stl",
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "cropped_shape": [
+        53,
+        26,
+        54
+      ],
+      "bbox_zyx": [
+        [
+          0,
+          53
+        ],
+        [
+          0,
+          26
+        ],
+        [
+          0,
+          54
+        ]
+      ],
+      "created_at": "2026-03-03T11:11:18",
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        0.00878101030785769,
+        0.0010566116527010727,
+        0.9999608879500181
+      ]
+    },
+    {
+      "id": "bipolar_hip_implant.nii",
+      "mask_file": "bipolar_hip_implant.nii.gz",
+      "source_mesh": "bipolar_hip_implant.stl",
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "cropped_shape": [
+        60,
+        47,
+        187
+      ],
+      "bbox_zyx": [
+        [
+          0,
+          60
+        ],
+        [
+          0,
+          47
+        ],
+        [
+          0,
+          187
+        ]
+      ],
+      "created_at": "2026-03-03T11:11:21",
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        -0.626416158279711,
+        1.234142537387406e-06,
+        0.7794888046948235
+      ],
+      "notes": "Manually flipped along axis 2 to correct head/stem direction in library orientation."
+    },
+    {
+      "id": "acetabularcupstl.nii",
+      "mask_file": "acetabularcupstl.nii.gz",
+      "source_mesh": "acetabularcupstl.STL",
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "cropped_shape": [
+        43,
+        51,
+        52
+      ],
+      "bbox_zyx": [
+        [
+          0,
+          43
+        ],
+        [
+          0,
+          51
+        ],
+        [
+          0,
+          52
+        ]
+      ],
+      "created_at": "2026-03-03T11:17:13",
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        0.683354394422775,
+        0.7176706189851364,
+        0.13407331676576853
+      ]
+    }
+  ]
+}

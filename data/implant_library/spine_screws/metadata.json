@@ -1,0 +1,337 @@
+{
+  "implant_type": "screws",
+  "typical_regions": [
+    "spine",
+    "long_bone"
+  ],
+  "materials": [
+    "Titanium",
+    "Steel"
+  ],
+  "preferred_axis": "long_axis",
+  "scale_mm_range": [
+    10.0,
+    60.0
+  ],
+  "notes": "Orthopedic fixation screws",
+  "items": [
+    {
+      "id": "screw_06_spine_fixation",
+      "mask_file": "screw_06_spine_fixation.nii.gz",
+      "source_image": "4614554.nii.gz",
+      "hu_threshold": [
+        2500.0,
+        null
+      ],
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "original_spacing_mm": [
+        0.29101601243019104,
+        0.29101601243019104,
+        2.5
+      ],
+      "resampled_to_isotropic_mm": 1.0,
+      "cropped_shape": [
+        62,
+        66,
+        80
+      ],
+      "bbox_zyx": [
+        [
+          40,
+          98
+        ],
+        [
+          59,
+          121
+        ],
+        [
+          52,
+          128
+        ]
+      ],
+      "created_at": "2026-01-26T18:35:48",
+      "keep_affine": false,
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        0.10952854888239308,
+        -0.9075283906758618,
+        -0.4054574171192312
+      ]
+    },
+    {
+      "id": "screw_01",
+      "mask_file": "screw_01.nii.gz",
+      "source_image": "2805012.nii.gz",
+      "hu_threshold": [
+        2500.0,
+        null
+      ],
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "original_spacing_mm": [
+        0.3476560115814209,
+        0.3476560115814209,
+        2.5
+      ],
+      "resampled_to_isotropic_mm": 1.0,
+      "cropped_shape": [
+        75,
+        85,
+        109
+      ],
+      "bbox_zyx": [
+        [
+          88,
+          159
+        ],
+        [
+          87,
+          168
+        ],
+        [
+          49,
+          154
+        ]
+      ],
+      "created_at": "2026-01-26T18:39:20",
+      "keep_affine": false,
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        -0.07375789879179454,
+        -0.5357357231962767,
+        0.8411581345128757
+      ]
+    },
+    {
+      "id": "screw_02",
+      "mask_file": "screw_02.nii.gz",
+      "source_image": "4634640.nii.gz",
+      "hu_threshold": [
+        2500.0,
+        null
+      ],
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "original_spacing_mm": [
+        0.36132800579071045,
+        0.36132800579071045,
+        2.5
+      ],
+      "resampled_to_isotropic_mm": 1.0,
+      "cropped_shape": [
+        40,
+        99,
+        161
+      ],
+      "bbox_zyx": [
+        [
+          111,
+          147
+        ],
+        [
+          104,
+          199
+        ],
+        [
+          68,
+          225
+        ]
+      ],
+      "created_at": "2026-01-26T18:57:18",
+      "keep_affine": false,
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        0.08061335621528376,
+        -0.09529242853322828,
+        0.9921798425003137
+      ]
+    },
+    {
+      "id": "screw_03",
+      "mask_file": "screw_03.nii.gz",
+      "source_image": "4574957.nii.gz",
+      "hu_threshold": [
+        2500.0,
+        null
+      ],
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "original_spacing_mm": [
+        0.34375,
+        0.34375,
+        2.5
+      ],
+      "resampled_to_isotropic_mm": 1.0,
+      "cropped_shape": [
+        55,
+        66,
+        134
+      ],
+      "bbox_zyx": [
+        [
+          236,
+          287
+        ],
+        [
+          231,
+          293
+        ],
+        [
+          348,
+          478
+        ]
+      ],
+      "created_at": "2026-01-26T19:02:21",
+      "keep_affine": false,
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        -0.04335975544654335,
+        -0.3227767046548148,
+        0.9454814279190229
+      ]
+    },
+    {
+      "id": "screw_04",
+      "mask_file": "screw_04.nii.gz",
+      "source_image": "4582727.nii.gz",
+      "hu_threshold": [
+        2500.0,
+        null
+      ],
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "original_spacing_mm": [
+        0.38476601243019104,
+        0.38476601243019104,
+        2.5
+      ],
+      "resampled_to_isotropic_mm": 1.0,
+      "cropped_shape": [
+        96,
+        85,
+        427
+      ],
+      "bbox_zyx": [
+        [
+          216,
+          308
+        ],
+        [
+          217,
+          298
+        ],
+        [
+          66,
+          489
+        ]
+      ],
+      "created_at": "2026-01-26T19:06:30",
+      "keep_affine": false,
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        -0.011077699203726903,
+        0.1952887251930291,
+        0.9806832304025763
+      ]
+    },
+    {
+      "id": "screw_05",
+      "mask_file": "screw_05.nii.gz",
+      "source_image": "4559850.nii.gz",
+      "hu_threshold": [
+        2500.0,
+        null
+      ],
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "original_spacing_mm": [
+        0.34570300579071045,
+        0.34570300579071045,
+        2.5
+      ],
+      "resampled_to_isotropic_mm": 1.0,
+      "cropped_shape": [
+        30,
+        75,
+        98
+      ],
+      "bbox_zyx": [
+        [
+          138,
+          164
+        ],
+        [
+          76,
+          147
+        ],
+        [
+          97,
+          191
+        ]
+      ],
+      "created_at": "2026-01-26T19:15:28",
+      "keep_affine": false,
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        0.09306455282837665,
+        0.28848638488215306,
+        0.9529504681485187
+      ]
+    },
+    {
+      "id": "surgical_bone_cortex_screws.nii",
+      "mask_file": "surgical_bone_cortex_screws.nii.gz",
+      "source_mesh": "Surgical Bone Cortex Screws.STL",
+      "voxel_spacing_mm": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "cropped_shape": [
+        9,
+        9,
+        44
+      ],
+      "bbox_zyx": [
+        [
+          0,
+          9
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          0,
+          44
+        ]
+      ],
+      "created_at": "2026-03-03T11:32:40",
+      "pca_aligned": true,
+      "pca_principal_axis": [
+        0.002753145707380736,
+        0.9999959786233547,
+        -0.0006803865319251687
+      ]
+    }
+  ]
+}

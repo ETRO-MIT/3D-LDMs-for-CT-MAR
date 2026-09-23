@@ -23,7 +23,14 @@ htmlcov/
 *.local.yml
 
 # Data, model weights, meshes, generated results, and experiment tracking
-/data/
+/data/*
+!/data/implant_library/
+/data/implant_library/*
+!/data/implant_library/README.md
+!/data/implant_library/hip_implants/
+!/data/implant_library/spine_screws/
+!/data/implant_library/hip_implants/**
+!/data/implant_library/spine_screws/**
 /outputs/
 /checkpoints/*
 !/checkpoints/README.md
@@ -35,6 +42,8 @@ htmlcov/
 *.safetensors
 *.nii
 *.nii.gz
+!/data/implant_library/hip_implants/*.nii.gz
+!/data/implant_library/spine_screws/*.nii.gz
 *.dcm
 *.stl
 *.zip
