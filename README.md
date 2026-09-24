@@ -355,11 +355,11 @@ To train your own models from scratch or fine-tune on custom cohorts:
 
 The training scripts load datasets using simple CSV files:
 
-- **Stage 1 (VQ-VAE): `clean_cts_manifest.csv`**
+- **Stage 1 (VQ-VAE): `train_manifest.csv`**
   ```csv
-  clean_image_path
-  /path/to/clean_case_001.nii.gz
-  /path/to/clean_case_002.nii.gz
+  image
+  /path/to/case_001.nii.gz
+  /path/to/case_002.nii.gz
   ```
 
 - **Stage 2 (Anatomy-Conditioned LDM): `paired_train.csv`**
@@ -380,12 +380,12 @@ The training scripts load datasets using simple CSV files:
   *(Note: If `metadata_path` is not provided, the loader will automatically look for a matching `.json` file in the same directory as `synthetic_image_path`).*
 
 #### 1. Stage 1: VQ-VAE-GAN Training
-Train the 3D discrete autoencoder on clean, artifact-free 3D CT volumes:
+Train the 3D discrete autoencoder on 3D CT volumes:
 
 ```bash
 python Main.py train-vqgan \
   --config_file configs/training/vqvae_ds4_train.yaml \
-  --train_ids /path/to/clean_cts_manifest.csv \
+  --train_ids /path/to/train_manifest.csv \
   --output_dir runs/vqgan \
   --batch_size 8 \
   --n_epochs 222
