@@ -70,6 +70,8 @@ class EMAQuantizer(nn.Module):
     def quantize(
         self, inputs: torch.Tensor, batch_size: int | None = 32
     ) -> tuple[torch.Tensor, torch.Tensor]:
+        if hasattr(inputs, "as_tensor"):
+            inputs = inputs.as_tensor()
         encoding_indices_view = list(inputs.shape)
         del encoding_indices_view[1]
 

@@ -20,7 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="python Main.py",
         description="3D Latent Diffusion Models for CT Metal Artifact Suppression (DGM4MICCAI 2026)",
     )
-    subparsers = parser.add_subparsers(dest="task", help="Select task: 'generate', 'suppress', or 'download'")
+    subparsers = parser.add_subparsers(dest="task", help="Select task: 'generate', 'suppress', 'download', 'train-vqgan', or 'train-ldm'")
 
     # --- 1. Synthetic Artifact Generation ---
     generate_parser = subparsers.add_parser(
@@ -280,6 +280,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Force re-download even if files already exist.",
     )
 
+    # --- 4. Training Pipelines ---
+    train_vqgan_p = subparsers.add_parser(
+        "train-vqgan",
+        help="Train Stage 1 VQ-VAE-GAN model on clean CT volumes.",
+        add_help=False,
+    )
+    train_vqgan_p.add_argument("args", nargs=argparse.REMAINDER)
+
+    train_ldm_p = subparsers.add_parser(
+        "train-ldm",
+        help="Train Stage 2 3D Latent Diffusion Model.",
+        add_help=False,
+    )
+    train_ldm_p.add_argument("args", nargs=argparse.REMAINDER)
+
     return parser
 
 
@@ -373,6 +388,16 @@ def run_download(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    raw_args = list(sys.argv[1:] if argv is None else argv)
+    if raw_args and raw_args[0] == "train-vqgan":
+        from ct_mar.training.train_vqgan import main as train_vqgan_main
+        sys.argv = ["ct-mar-train-vqgan"] + raw_args[1:]
+        return train_vqgan_main() or 0
+    if raw_args and raw_args[0] == "train-ldm":
+        from ct_mar.training.train_ldm import main as train_ldm_main
+        sys.argv = ["ct-mar-train-ldm"] + raw_args[1:]
+        return train_ldm_main() or 0
+
     parser = build_parser()
     args = parser.parse_args(argv)
 

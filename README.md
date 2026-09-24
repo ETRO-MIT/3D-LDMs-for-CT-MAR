@@ -375,12 +375,15 @@ The training scripts load datasets using simple CSV files:
 Train the 3D discrete autoencoder on clean, artifact-free 3D CT volumes:
 
 ```bash
-ct-mar-train-vqgan \
+python Main.py train-vqgan \
   --config_file configs/training/vqvae_ds4_train.yaml \
   --train_ids /path/to/clean_cts_manifest.csv \
   --output_dir runs/vqgan \
   --batch_size 8 \
   --n_epochs 222
+
+# Or directly using the installed CLI entry point:
+# ct-mar-train-vqgan --config_file ... --train_ids ...
 ```
 
 #### 2. Stage 2: 3D Latent Diffusion Model Training
@@ -388,7 +391,7 @@ Train the conditional 3D diffusion U-Net using paired synthetic data:
 
 ```bash
 # Train Anatomy-Conditioned LDM
-ct-mar-train-ldm \
+python Main.py train-ldm \
   --model anatomy \
   --config_file configs/training/anatomy_ldm_train.yaml \
   --config_vqvae configs/training/vqvae_ds4_train.yaml \
@@ -397,13 +400,16 @@ ct-mar-train-ldm \
   --output_dir runs/ldm_anatomy
 
 # Train Anatomy + Metadata-Conditioned LDM
-ct-mar-train-ldm \
+python Main.py train-ldm \
   --model anatomy_metadata \
   --config_file configs/training/anatomy_metadata_ldm_train.yaml \
   --config_vqvae configs/training/vqvae_ds4_train.yaml \
   --vqvae_ckpt runs/vqgan/checkpoint_best.pth \
   --train_ids /path/to/paired_train.csv \
   --output_dir runs/ldm_metadata
+
+# Or directly using the installed CLI entry point:
+# ct-mar-train-ldm --model ...
 ```
 
 ---

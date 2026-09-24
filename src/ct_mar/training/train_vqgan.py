@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import warnings
 from pathlib import Path
 import yaml
 import torch
@@ -9,10 +10,22 @@ import torch.nn.functional as F
 from torch.cuda.amp import GradScaler, autocast
 from tqdm import tqdm
 
+# Silence PyTorch AMP deprecation warnings
+warnings.filterwarnings("ignore", category=FutureWarning, message=r".*torch\.cuda\.amp.*")
+warnings.filterwarnings("ignore", category=FutureWarning, message=r".*GradScaler.*")
+warnings.filterwarnings("ignore", category=FutureWarning, message=r".*autocast.*")
+
 from monai.data import DataLoader, Dataset
+try:
+    from monai.data import set_track_meta
+    set_track_meta(False)
+except ImportError:
+    pass
+
 from monai.transforms import (
     Compose,
     EnsureChannelFirstd,
+    EnsureTyped,
     Lambdad,
     LoadImaged,
     RandFlipd,
@@ -45,6 +58,7 @@ def get_clean_dataloader(csv_path: str | Path, batch_size: int = 15, roi: tuple 
             SpatialPadd(keys=["image"], spatial_size=roi, mode="constant", constant_values=-1.0),
             RandFlipd(keys=["image"], spatial_axis=1, prob=0.5),
             RandSpatialCropd(keys=["image"], roi_size=roi, random_size=False),
+            EnsureTyped(keys=["image"], data_type="tensor", track_meta=False),
         ]
     )
     dataset = Dataset(data=data, transform=transforms)
@@ -93,7 +107,10 @@ def main():
         pbar = tqdm(loader, desc=f"Epoch {epoch}/{args.n_epochs}")
 
         for batch in pbar:
-            images = batch["image"].to(device)
+            images = batch["image"]
+            if hasattr(images, "as_tensor"):
+                images = images.as_tensor()
+            images = images.to(device)
 
             # Generator step
             opt_g.zero_grad()

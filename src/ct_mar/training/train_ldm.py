@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import warnings
 from pathlib import Path
 import yaml
 import torch
@@ -8,6 +9,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.cuda.amp import GradScaler, autocast
 from tqdm import tqdm
+
+# Silence PyTorch AMP deprecation warnings
+warnings.filterwarnings("ignore", category=FutureWarning, message=r".*torch\.cuda\.amp.*")
+warnings.filterwarnings("ignore", category=FutureWarning, message=r".*GradScaler.*")
+warnings.filterwarnings("ignore", category=FutureWarning, message=r".*autocast.*")
+
+try:
+    from monai.data import set_track_meta
+    set_track_meta(False)
+except ImportError:
+    pass
 
 from ct_mar.inference.models import (
     VQVAE,
@@ -100,8 +112,15 @@ def main():
         pbar = tqdm(train_loader, desc=f"Epoch {epoch}/{args.n_epochs}")
 
         for batch in pbar:
-            cond_images = batch["synthetic_image"].to(device)
-            target_images = batch["implant_only_image"].to(device)
+            cond_images = batch["synthetic_image"]
+            if hasattr(cond_images, "as_tensor"):
+                cond_images = cond_images.as_tensor()
+            cond_images = cond_images.to(device)
+
+            target_images = batch["implant_only_image"]
+            if hasattr(target_images, "as_tensor"):
+                target_images = target_images.as_tensor()
+            target_images = target_images.to(device)
 
             with torch.no_grad():
                 target_latent = stage1.encode_stage_2_inputs(target_images) * args.scale_factor
@@ -150,8 +169,15 @@ def main():
                 val_loss = 0.0
                 with torch.no_grad():
                     for v_batch in val_loader:
-                        c_img = v_batch["synthetic_image"].to(device)
-                        t_img = v_batch["implant_only_image"].to(device)
+                        c_img = v_batch["synthetic_image"]
+                        if hasattr(c_img, "as_tensor"):
+                            c_img = c_img.as_tensor()
+                        c_img = c_img.to(device)
+
+                        t_img = v_batch["implant_only_image"]
+                        if hasattr(t_img, "as_tensor"):
+                            t_img = t_img.as_tensor()
+                        t_img = t_img.to(device)
                         t_lat = stage1.encode_stage_2_inputs(t_img) * args.scale_factor
                         c_lat = stage1.encode_stage_2_inputs(c_img) * args.scale_factor
                         ts = torch.randint(0, scheduler.num_train_timesteps, (t_lat.shape[0],), device=device).long()

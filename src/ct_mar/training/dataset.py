@@ -8,6 +8,7 @@ import torch
 from monai.transforms import (
     Compose,
     EnsureChannelFirstd,
+    EnsureTyped,
     Lambdad,
     LoadImaged,
     RandFlipd,
@@ -19,6 +20,11 @@ from monai.transforms import (
     CenterSpatialCropd,
 )
 from monai.data import DataLoader, Dataset
+try:
+    from monai.data import set_track_meta
+    set_track_meta(False)
+except ImportError:
+    pass
 
 from ct_mar.inference.transforms import CT_HU_MAX_METAL, CT_HU_MIN
 from ct_mar.inference.models.metadata import (
@@ -103,6 +109,7 @@ def build_mar_transforms(image_roi: tuple[int, int, int] = (448, 448, 256), trai
     else:
         transforms.append(CenterSpatialCropd(keys=keys, roi_size=image_roi))
 
+    transforms.append(EnsureTyped(keys=keys, data_type="tensor", track_meta=False))
     return Compose(transforms)
 
 
