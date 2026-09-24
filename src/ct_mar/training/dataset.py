@@ -76,7 +76,7 @@ def build_mar_transforms(image_roi: tuple[int, int, int] = (448, 448, 256), trai
     keys = ["synthetic_image", "implant_only_image"]
     transforms = [
         LoadImaged(keys=keys, image_only=True),
-        EnsureChannelFirstd(keys=keys, channel_dim="no_channel"),
+        EnsureChannelFirstd(keys=keys),
         Lambdad(
             keys=keys,
             func=lambda x: np.nan_to_num(x, nan=0.0, posinf=CT_HU_MAX_METAL, neginf=CT_HU_MIN),

@@ -44,7 +44,7 @@ def get_clean_dataloader(csv_path: str | Path, batch_size: int = 15, roi: tuple 
     transforms = Compose(
         [
             LoadImaged(keys=["image"], image_only=True),
-            EnsureChannelFirstd(keys=["image"], channel_dim="no_channel"),
+            EnsureChannelFirstd(keys=["image"]),
             Lambdad(keys=["image"], func=lambda x: np.nan_to_num(x, nan=0.0, posinf=CT_HU_MAX_METAL, neginf=CT_HU_MIN)),
             ThresholdIntensityd(keys=["image"], threshold=CT_HU_MAX_METAL, above=False, cval=CT_HU_MAX_METAL),
             ThresholdIntensityd(keys=["image"], threshold=CT_HU_MIN, above=True, cval=CT_HU_MIN),
