@@ -351,6 +351,26 @@ ct-mar-suppress --input artifacted.nii.gz --output-dir outputs/restored --model 
 
 To train your own models from scratch or fine-tune on custom cohorts:
 
+#### Training Manifest Schema (CSV)
+
+The training scripts load datasets using simple CSV files:
+
+- **Stage 1 (VQ-VAE): `clean_cts_manifest.csv`**
+  ```csv
+  clean_image_path
+  /path/to/clean_case_001.nii.gz
+  /path/to/clean_case_002.nii.gz
+  ```
+
+- **Stage 2 (LDM): `paired_train.csv`**
+  Pairs the synthetic artifacted CT with the clean ground-truth target (matching the outputs of `Main.py generate`). The sidecar `.json` metadata is auto-detected if located in the same directory:
+  ```csv
+  synthetic_image_path,implant_only_image_path
+  /path/to/synth_case_001.nii.gz,/path/to/implant_only_case_001.nii.gz
+  /path/to/synth_case_002.nii.gz,/path/to/implant_only_case_002.nii.gz
+  ```
+  *(Optional columns to override metadata: `metadata_path`, `region`, `side`, `metal_name`).*
+
 #### 1. Stage 1: VQ-VAE-GAN Training
 Train the 3D discrete autoencoder on clean, artifact-free 3D CT volumes:
 
