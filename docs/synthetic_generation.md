@@ -45,22 +45,40 @@ ct-mar-prepare --input-dir data/prepared --check-only
 TotalSegmentator runs automatically in a temporary directory, selects and positions the implant based on bone overlap, and deletes the temporary masks when complete:
 
 ```bash
+# Recommended via Main.py:
+python Main.py generate \
+  --input data/clean_ct.nii.gz \
+  --output_dir outputs/generated \
+  --metal titanium
+
+# Or via CLI:
 ct-mar-generate \
   --image data/clean_ct.nii.gz \
   --output-dir outputs/generated \
+  --metal titanium \
   --seed 0
 ```
-*(Pass `--keep-anatomy` if you want to preserve the generated anatomy masks under `output-dir/anatomy`).*
+*(Pass `--keep-anatomy` or `--keep_anatomy` if you want to preserve the generated anatomy masks under `output-dir/anatomy`).*
 
 ### Option B: Using pre-computed anatomy masks
 If you already ran TotalSegmentator or have organ masks available:
 
 ```bash
+# Via Main.py:
+python Main.py generate \
+  --input data/clean_ct.nii.gz \
+  --anatomy_dir outputs/anatomy \
+  --implant_library data/implant_library \
+  --output_dir outputs/generated \
+  --metal titanium
+
+# Or via CLI:
 ct-mar-generate \
   --image data/clean_ct.nii.gz \
   --anatomy-dir outputs/anatomy \
   --implant-library data/implant_library \
   --output-dir outputs/generated \
+  --metal titanium \
   --seed 0
 ```
 

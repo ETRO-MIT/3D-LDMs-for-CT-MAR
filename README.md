@@ -313,10 +313,22 @@ python Main.py suppress \
 ```
 
 #### Anatomy + Metadata-Conditioned LDM (`anatomy_metadata`)
+
+**Option A: Using sidecar metadata JSON (Recommended for simulated cases):**
+```bash
+python Main.py suppress \
+  --input /path/to/synth_case.nii.gz \
+  --metadata_json /path/to/synth_case.json \
+  --output_dir outputs/restored_metadata \
+  --model anatomy_metadata \
+  --steps 500
+```
+
+**Option B: Specifying metadata attributes manually (Recommended for clinical scans):**
 ```bash
 python Main.py suppress \
   --input /path/to/artifacted_ct.nii.gz \
-  --output_dir outputs/restored \
+  --output_dir outputs/restored_metadata \
   --model anatomy_metadata \
   --region hip \
   --side right \
@@ -324,16 +336,7 @@ python Main.py suppress \
   --steps 500
 ```
 
-You can also provide the sidecar metadata JSON file directly:
-```bash
-python Main.py suppress \
-  --input /path/to/artifacted_ct.nii.gz \
-  --metadata_json /path/to/artifacted_ct.json \
-  --output_dir outputs/restored \
-  --model anatomy_metadata
-```
-
-Or use the CLI command:
+Or use the installed CLI command:
 ```bash
 ct-mar-suppress --input artifacted.nii.gz --output-dir outputs/restored --model anatomy
 ```
