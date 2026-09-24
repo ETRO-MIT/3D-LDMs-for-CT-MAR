@@ -20,11 +20,6 @@ from monai.transforms import (
     CenterSpatialCropd,
 )
 from monai.data import DataLoader, Dataset
-try:
-    from monai.data import set_track_meta
-    set_track_meta(False)
-except ImportError:
-    pass
 
 from ct_mar.inference.transforms import CT_HU_MAX_METAL, CT_HU_MIN
 from ct_mar.inference.models.metadata import (
@@ -80,7 +75,7 @@ def build_mar_transforms(image_roi: tuple[int, int, int] = (448, 448, 256), trai
     """Paired transforms ensuring identical spatial crops and HU windowing."""
     keys = ["synthetic_image", "implant_only_image"]
     transforms = [
-        LoadImaged(keys=keys),
+        LoadImaged(keys=keys, image_only=True),
         EnsureChannelFirstd(keys=keys),
         Lambdad(
             keys=keys,
@@ -109,7 +104,12 @@ def build_mar_transforms(image_roi: tuple[int, int, int] = (448, 448, 256), trai
     else:
         transforms.append(CenterSpatialCropd(keys=keys, roi_size=image_roi))
 
-    transforms.append(EnsureTyped(keys=keys, data_type="tensor", track_meta=False))
+    transforms.extend(
+        [
+            EnsureTyped(keys=keys, data_type="tensor", track_meta=False),
+            Lambdad(keys=keys, func=lambda x: x.as_tensor() if hasattr(x, "as_tensor") else torch.as_tensor(x)),
+        ]
+    )
     return Compose(transforms)
 
 

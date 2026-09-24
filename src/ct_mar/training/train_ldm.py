@@ -15,12 +15,6 @@ warnings.filterwarnings("ignore", category=FutureWarning, message=r".*torch\.cud
 warnings.filterwarnings("ignore", category=FutureWarning, message=r".*GradScaler.*")
 warnings.filterwarnings("ignore", category=FutureWarning, message=r".*autocast.*")
 
-try:
-    from monai.data import set_track_meta
-    set_track_meta(False)
-except ImportError:
-    pass
-
 from ct_mar.inference.models import (
     VQVAE,
     DiffusionModelUNet,

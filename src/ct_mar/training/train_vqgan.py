@@ -16,12 +16,6 @@ warnings.filterwarnings("ignore", category=FutureWarning, message=r".*GradScaler
 warnings.filterwarnings("ignore", category=FutureWarning, message=r".*autocast.*")
 
 from monai.data import DataLoader, Dataset
-try:
-    from monai.data import set_track_meta
-    set_track_meta(False)
-except ImportError:
-    pass
-
 from monai.transforms import (
     Compose,
     EnsureChannelFirstd,
@@ -49,7 +43,7 @@ def get_clean_dataloader(csv_path: str | Path, batch_size: int = 15, roi: tuple 
 
     transforms = Compose(
         [
-            LoadImaged(keys=["image"]),
+            LoadImaged(keys=["image"], image_only=True),
             EnsureChannelFirstd(keys=["image"]),
             Lambdad(keys=["image"], func=lambda x: np.nan_to_num(x, nan=0.0, posinf=CT_HU_MAX_METAL, neginf=CT_HU_MIN)),
             ThresholdIntensityd(keys=["image"], threshold=CT_HU_MAX_METAL, above=False, cval=CT_HU_MAX_METAL),
@@ -59,6 +53,7 @@ def get_clean_dataloader(csv_path: str | Path, batch_size: int = 15, roi: tuple 
             RandFlipd(keys=["image"], spatial_axis=1, prob=0.5),
             RandSpatialCropd(keys=["image"], roi_size=roi, random_size=False),
             EnsureTyped(keys=["image"], data_type="tensor", track_meta=False),
+            Lambdad(keys=["image"], func=lambda x: x.as_tensor() if hasattr(x, "as_tensor") else torch.as_tensor(x)),
         ]
     )
     dataset = Dataset(data=data, transform=transforms)
