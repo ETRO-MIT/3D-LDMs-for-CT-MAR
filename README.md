@@ -295,7 +295,7 @@ For an input CT `case_001.nii.gz`:
 4. `synth_case_001.json`: Simulation parameters, selected implant ID, region, and metadata.
 
 > [!TIP]
-> The default simulation geometry matches the Master's Thesis: 360 projection angles, $256 \times 256$ detector grid, $\text{SOD}=30\text{ cm}$, $\text{SDD}=60\text{ cm}$, and `detector_spacing = 0.5 cm` ($64\text{ cm}$ field-of-view at isocenter to prevent anatomical truncation). These can be customized via `--detector_spacing`, `--detector_pixels`, `--angle_num`, etc.
+> The default simulation geometry: 360 projection angles, $256 \times 256$ detector grid, $\text{SOD}=30\text{ cm}$, $\text{SDD}=60\text{ cm}$, and `detector_spacing = 0.5 cm` ($64\text{ cm}$ field-of-view at isocenter to prevent anatomical truncation). These can be customized via `--detector_spacing`, `--detector_pixels`, `--angle_num`, etc.
 
 ---
 
