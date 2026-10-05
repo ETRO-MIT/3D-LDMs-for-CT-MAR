@@ -28,12 +28,15 @@ This repository provides an end-to-end framework supporting:
 If you find this repository or our work useful in your research, please cite:
 
 ```bibtex
-@inproceedings{casado2026largevolume,
-  title={Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression},
-  author={Moreno Casado, Xabier and Vandemeulebroucke, Jef and Ceranka, Jakub},
-  booktitle={Deep Generative Models for Medical Imaging (DGM4MICCAI), MICCAI Workshop},
-  year={2026},
-  note={In press}
+@InProceedings{MorXab_LargeVolume_MICCAISAT2026,
+        author = { Moreno Casado, Xabier AND Vandemeulebroucke, Jef AND Ceranka, Jakub},
+        title = { { Large-Volume Conditioned 3D Latent Diffusion Models for CT Metal Artifact Suppression } },
+        booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2026 Workshops and Challenges},
+        year = {2026},
+        publisher = {Springer Nature Switzerland},
+        volume = {LNCS 17258},
+        month = {pending},
+        page = {pending}
 }
 ```
 
